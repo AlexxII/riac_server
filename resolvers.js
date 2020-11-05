@@ -9,15 +9,17 @@ const PollFile = require('./models/polls/pollfile')
 const Topic = require('./models/polls/topic')
 const Logic = require('./models/polls/logic')
 const City = require('./models/polls/city');
-const question = require('./models/polls/question');
+const Respondent = require('./models/polls/respondent');
+const Result = require('./models/polls/result')
+
 const { GraphQLScalarType } = require('graphql');
 const moment = require('moment')
 
 module.exports = {
   Query: {
-    currentUser: (parent, args, context) => context.getUser(),
+    currentUser: (_, __, context) => context.getUser(),
     polls: () => Poll.find({}),
-    poll: (parent, args) => Poll.findById(args.id),
+    poll: (_, args) => Poll.findById(args.id),
     questions: () => {
       return Question.find({});
     },
@@ -30,15 +32,19 @@ module.exports = {
     cities: () => {
       return City.find({})
     },
-    question: (parent, args) => Question.findById(args.id),
-    logicById: (parent, args) => Logic.findById(args.id),
-    pollLogic: async (parent, args) => {
+    question: (_, args) => Question.findById(args.id),
+    logicById: (_, args) => Logic.findById(args.id),
+    pollLogic: async (_, args) => {
       const res = await Logic.findOne({ "poll": args.id }).exec()
+      return res
+    },
+    result: async (_, args) => {
+      const res = await Respondent.find({ "poll": args.id }).exec()
       return res
     }
   },
   Mutation: {
-    signup: async (parent, { username, password }, context) => {
+    signup: async (_, { username, password }, context) => {
       const res = await Logic.findOne({ "username": username }).exec()
       if (res) {
         throw new Error('Пользователь с таким ИМЕНЕМ уже существует');
@@ -52,7 +58,7 @@ module.exports = {
         return { user: newUser }
       }
     },
-    signin: async (parent, { username, password }, context) => {
+    signin: async (_, { username, password }, context) => {
       const { user } = await context.authenticate('graphql-local', { username, password });
       if (!user) {
         throw new AuthenticationError('Такого пользователя не существует');
@@ -61,8 +67,35 @@ module.exports = {
         return { user }
       }
     },
-    logout: (parent, args, context) => context.logout(),
-    addPoll(parent, args, context, info) {
+    logout: (_, __, context) => context.logout(),
+    newCity: async (_, args) => {
+      const city = {
+        _id: uuidv4(),
+        title: args.title,
+        population: args.population,
+        category: args.category
+      }
+      const res = await City.create(city)
+      return res
+    },
+    cityEdit: async (_, args) => {
+      const filter = { _id: args.id }
+      const update = {
+        title: args.title,
+        population: args.population,
+        category: args.category
+      }
+      let city = await City.findOneAndUpdate(filter, update, {
+        new: true
+      })
+      return city
+    },
+    deleteCity: async (_, args) => {
+      const city = await City.findOne({ _id: args.id })
+      const res = await city.deleteOne()
+      return res._id === args.id
+    },
+    addPoll(_, args) {
       const questions = args.questions
       const topics = args.topic
       const logic = args.logic
@@ -145,7 +178,7 @@ module.exports = {
       }
       Logic.create(logicData)
     },
-    deletePoll(parent, args) {
+    deletePoll(_, args) {
       const pollId = args.id
       Poll.findById(pollId, function (err, result) {
         if (err) {
@@ -183,7 +216,7 @@ module.exports = {
         }
       })
     },
-    newLimit(parent, args, context, info) {
+    newLimit(_, args) {
       const questionId = args.id
       const limit = args.limit
       // return Question.findByIdAndUpdate({ "_id": questionId }, { "limit": limit }, { new: true })
@@ -192,7 +225,7 @@ module.exports = {
       })
       return true
     },
-    newOrder(parent, args) {
+    newOrder(_, args) {
       const questions = args.neworder
       const qLength = questions.length
       let answer = true
@@ -207,11 +240,38 @@ module.exports = {
       }
       return true
     },
-    saveConfig(parent, args) {
+    saveConfig(_, args) {
       const filePath = args.path
       const text = args.text
       fs.writeFileSync(`.${filePath}`, text)
       return true
+    },
+    saveResult(_, args) {
+      const questions = args.data
+      let resultPool = []
+      const respondentId = uuidv4()
+      for (let i = 0; i < questions.length; i++) {
+        const questionId = questions[i].id
+        const answers = questions[i].data
+        for (let j = 0; j < answers.length; j++) {
+          const result = {
+            _id: uuidv4(),
+            respondent: respondentId,
+            question: questionId,
+            code: answers[j].code,
+            text: answers[j].text
+          }
+          Result.create(result)
+          resultPool.push(result._id)
+        }
+      }
+      const resp = {
+        _id: respondentId,
+        poll: args.poll,
+        city: args.city,
+        data: resultPool
+      }
+      Respondent.create(resp)
     }
   },
   Poll: {
@@ -237,9 +297,6 @@ module.exports = {
       const res = await Logic.findOne({ "poll": parent._id })
       return res
     },
-    // startDate: (parent) => {
-    //   return parent.startDate.getDate() + '.' + (parent.startDate.getMonth() + 1) + '.' + parent.startDate.getFullYear()
-    // },
     startDate: parent => {
       return moment(parent.startDate).format('DD.MM.YYYY')
     },
@@ -250,6 +307,17 @@ module.exports = {
   Question: {
     answers: (parent) => {
       return Answer.find({ "_id": { $in: parent.answers } }).sort('order')
+    }
+  },
+  Respondent: {
+    poll: async (parent) => {
+      return await Poll.findById(parent.poll)
+    },
+    city: async (parent) => {
+      return await City.findById(parent.city)
+    },
+    result: (parent) => {
+      return Result.find({ "_id": { $in: parent.result } })
     }
   },
   PollLogic: new GraphQLScalarType({

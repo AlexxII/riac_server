@@ -69,7 +69,9 @@ const typeDefs = gql`
     cities: [City],
     question(id: ID!): Question,
     logicById(id:ID!): Logic,
-    pollLogic(id:ID!): Logic
+    pollLogic(id:ID!): Logic,
+    result(id:ID!): [Respondent],
+    city(id: ID!): City
   }
 
   type Topic {
@@ -84,8 +86,10 @@ const typeDefs = gql`
   }
 
   type City {
-    id: String!,
-    title: String!
+    id: ID!,
+    title: String!,
+    population: Int!,
+    category: String!
   }
 
   input ReorderedArray {
@@ -93,16 +97,44 @@ const typeDefs = gql`
     order: Int!
   }
 
+  type Respondent {
+    id: String!,
+    poll: Poll!,
+    city: City,
+    result: [Result]
+  }
+
+  type Result {
+    id: String!,
+    respondent: Respondent!,
+    question: Question!,
+    code: String!,
+    text: String
+  }
+
   type Mutation {
     logout: Boolean,
     signin(username: String!, password: String!): AuthPayload,
     signup(username: String!, password: String!): AuthPayload,
+    newCity(title: String!, population: Int!, category: String!): City!,
+    cityEdit(id: String!, title: String!, population: Int!, category: String!): City!,
+    deleteCity(id: String!): Boolean,
     addPoll(poll: PollWithConfig, questions: [QuestionInput], logic: LogicInput, topic: [TopicInput]): Poll,
     deletePoll(id: ID!): Poll,
     newLimit(id: ID!, limit: Int!): Boolean,
     newOrder(neworder: [ReorderedArray]): Boolean,
     saveConfig(path: String!, text: String!): Boolean,
-    saveResult(poll: String!, city: String!, data: [String]!): Boolean
+    saveResult(poll: String!, city: String!, user: String!, pool: [String], data: [ResultData]): Boolean
+  }
+
+  input ResultData {
+    id: String!,
+    data: [resultInput]
+  }
+
+  input resultInput {
+    code: String!
+    text: String
   }
 
   input PollWithConfig {
@@ -157,6 +189,7 @@ const typeDefs = gql`
   }
 
   enum Role {
+    SUPERADMIN
     ADMIN
     USER
     GUEST
