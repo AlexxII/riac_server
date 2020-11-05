@@ -10,9 +10,7 @@ const questionSchema = new Schema({
   order: Number,
   topic: Number,
   poll: String,
-  answers: [
-    String
-  ]
+  answers: [String]
 })
 
 module.exports = mongoose.model('Questions', questionSchema)

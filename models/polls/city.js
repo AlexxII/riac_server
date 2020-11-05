@@ -3,7 +3,9 @@ const Schema = mongoose.Schema
 
 const citySchema = new Schema({
   _id: String,
-  title: String
+  title: String,
+  population: Number,
+  category: String
 })
 
 module.exports = mongoose.model('Cities', citySchema)
