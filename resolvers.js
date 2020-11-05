@@ -2,6 +2,7 @@ const { AuthenticationError } = require('apollo-server-express')
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs')
 const ini = require('ini')
+
 const Poll = require('./models/polls/poll')
 const Question = require('./models/polls/question')
 const Answer = require('./models/polls/answer')
@@ -9,7 +10,7 @@ const PollFile = require('./models/polls/pollfile')
 const Topic = require('./models/polls/topic')
 const Logic = require('./models/polls/logic')
 const City = require('./models/polls/city');
-const question = require('./models/polls/question');
+
 const { GraphQLScalarType } = require('graphql');
 const moment = require('moment')
 
@@ -237,9 +238,6 @@ module.exports = {
       const res = await Logic.findOne({ "poll": parent._id })
       return res
     },
-    // startDate: (parent) => {
-    //   return parent.startDate.getDate() + '.' + (parent.startDate.getMonth() + 1) + '.' + parent.startDate.getFullYear()
-    // },
     startDate: parent => {
       return moment(parent.startDate).format('DD.MM.YYYY')
     },
