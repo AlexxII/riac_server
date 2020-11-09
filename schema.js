@@ -70,8 +70,12 @@ const typeDefs = gql`
     question(id: ID!): Question,
     logicById(id:ID!): Logic,
     pollLogic(id:ID!): Logic,
+
     result(id:ID!): [Respondent],
-    city(id: ID!): City
+    pollResults(id:String!): [Respondent],
+    
+    city(id: ID!): City,
+    cityCategories: [CityCategory]
   }
 
   type Topic {
@@ -89,7 +93,12 @@ const typeDefs = gql`
     id: ID!,
     title: String!,
     population: Int!,
-    category: String!
+    category: CityCategory!
+  }
+
+  type CityCategory {
+    value: String!,
+    label: String!
   }
 
   input ReorderedArray {
@@ -101,7 +110,7 @@ const typeDefs = gql`
     id: String!,
     poll: Poll!,
     city: City,
-    result: [Result]
+    result: [Result]!
   }
 
   type Result {
@@ -116,14 +125,17 @@ const typeDefs = gql`
     logout: Boolean,
     signin(username: String!, password: String!): AuthPayload,
     signup(username: String!, password: String!): AuthPayload,
+
     newCity(title: String!, population: Int!, category: String!): City!,
     cityEdit(id: String!, title: String!, population: Int!, category: String!): City!,
     deleteCity(id: String!): Boolean,
+
     addPoll(poll: PollWithConfig, questions: [QuestionInput], logic: LogicInput, topic: [TopicInput]): Poll,
     deletePoll(id: ID!): Poll,
     newLimit(id: ID!, limit: Int!): Boolean,
     newOrder(neworder: [ReorderedArray]): Boolean,
     saveConfig(path: String!, text: String!): Boolean,
+
     saveResult(poll: String!, city: String!, user: String!, pool: [String], data: [ResultData]): Boolean
   }
 
@@ -135,6 +147,10 @@ const typeDefs = gql`
   input resultInput {
     code: String!
     text: String
+  }
+
+  input CityType {
+    value: String!
   }
 
   input PollWithConfig {

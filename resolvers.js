@@ -13,6 +13,8 @@ const City = require('./models/polls/city');
 const Respondent = require('./models/polls/respondent');
 const Result = require('./models/polls/result')
 
+const cityCategories = require('./global_constants')
+
 const { GraphQLScalarType } = require('graphql');
 const moment = require('moment')
 
@@ -33,6 +35,9 @@ module.exports = {
     cities: () => {
       return City.find({})
     },
+    cityCategories: () => {
+      return cityCategories
+    },
     question: (_, args) => Question.findById(args.id),
     logicById: (_, args) => Logic.findById(args.id),
     pollLogic: async (_, args) => {
@@ -40,6 +45,10 @@ module.exports = {
       return res
     },
     result: async (_, args) => {
+      const res = await Respondent.find({ "poll": args.id }).exec()
+      return res
+    },
+    pollResults: async (_, args) => {
       const res = await Respondent.find({ "poll": args.id }).exec()
       return res
     }
@@ -247,7 +256,7 @@ module.exports = {
       fs.writeFileSync(`.${filePath}`, text)
       return true
     },
-    saveResult(_, args) {
+    saveResult: async (_, args) => {
       const questions = args.data
       let resultPool = []
       const respondentId = uuidv4()
@@ -272,7 +281,8 @@ module.exports = {
         city: args.city,
         data: resultPool
       }
-      Respondent.create(resp)
+      const res = await Respondent.creater(resp)
+      return res
     }
   },
   Poll: {
@@ -317,8 +327,13 @@ module.exports = {
     city: async (parent) => {
       return await City.findById(parent.city)
     },
-    result: (parent) => {
-      return Result.find({ "_id": { $in: parent.result } })
+    result: async (parent) => {
+      return await Result.find({ "_id": { $in: parent.data } })
+    }
+  },
+  City: {
+    category: async (parent) => {
+      return cityCategories.filter(({ value }) => value === parent.category)[0]
     }
   },
   PollLogic: new GraphQLScalarType({
