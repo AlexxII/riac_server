@@ -81,6 +81,10 @@ app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname, 'asset', 'index.html'));
 });
 
+app.get('/vks', function (req, res) {
+  res.sendFile(path.join(__dirname, 'vks', 'index.html'));
+});
+
 server.applyMiddleware({ app, cors: false })
 
 app.listen({ port: PORT }, () =>
