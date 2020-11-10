@@ -49,7 +49,32 @@ module.exports = {
       return res
     },
     pollResults: async (_, args) => {
-      const res = await Respondent.find({ "poll": args.id }).exec()
+      let res = await Respondent.find({ "poll": args.id }).exec()
+      const poll = args.id;
+      const cities = [
+        "006699c4-fe40-4228-a215-7590e3f76a33",
+        "2ef0b09a-f347-4124-bf11-b2339a2038fe",
+        "6b87c505-a3a6-4218-9702-69e02c01a2e0",
+        "b73cf620-e446-4b3a-b886-4d8bc53af3ad",
+        "bcc39e02-82f4-481c-8140-7017eef809db",
+        "c0a2fdf5-0b01-4d93-a8ec-b4997fdfdc82",
+        "cffa5357-e4c5-4269-9e1d-3174078e0ff0"
+      ];
+      const mainCount = 80000;
+      for (let i = 0; i < mainCount; i++) {
+        let data = []
+        const rand = randomInteger(12, 18)
+        for (let j = 0; j < rand; j++) {
+          data.push(uuidv4())
+        }
+        res.push({
+          data,
+          id: uuidv4(),
+          poll,
+          city: cities[randomInteger(0, 6)],
+          _v: 0
+        })
+      }
       return res
     }
   },
@@ -344,3 +369,9 @@ module.exports = {
     parseLiteral: ast => ast.value
   })
 }
+
+function randomInteger(min, max) {
+  // получить случайное число от (min-0.5) до (max+0.5)
+  let rand = min - 0.5 + Math.random() * (max - min + 1);
+  return Math.round(rand);
+};
