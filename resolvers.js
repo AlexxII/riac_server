@@ -60,7 +60,7 @@ module.exports = {
         "c0a2fdf5-0b01-4d93-a8ec-b4997fdfdc82",
         "cffa5357-e4c5-4269-9e1d-3174078e0ff0"
       ];
-      const mainCount = 80000;
+      const mainCount = 0;
       for (let i = 0; i < mainCount; i++) {
         let data = []
         const rand = randomInteger(12, 18)
