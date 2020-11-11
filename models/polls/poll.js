@@ -18,6 +18,9 @@ const pollSchema = new Schema({
   files: [
     String
   ],
+  cities: [
+    String
+  ],
   active: Boolean,
   created: Date,
   lastModified: Date,

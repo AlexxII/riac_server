@@ -38,6 +38,9 @@ module.exports = {
     cityCategories: () => {
       return cityCategories
     },
+    pollCities: (_, args) => {
+      return City.find({})
+    },
     question: (_, args) => Question.findById(args.id),
     logicById: (_, args) => Logic.findById(args.id),
     pollLogic: async (_, args) => {
@@ -306,8 +309,12 @@ module.exports = {
         city: args.city,
         data: resultPool
       }
-      const res = await Respondent.creater(resp)
-      return res
+      const res = await Respondent.create(resp)
+      if (res) {
+        return true
+      } else {
+        return false
+      }
     }
   },
   Poll: {
@@ -327,6 +334,9 @@ module.exports = {
     },
     answersCount: (parent) => {
       return Answer.find({ "poll": parent._id }).count()
+    },
+    cities: (parent) => {
+      return City.find({ "_id": { $in: parent.cities } })
     },
     color: () => 'red',
     logic: async (parent) => {
@@ -354,6 +364,11 @@ module.exports = {
     },
     result: async (parent) => {
       return await Result.find({ "_id": { $in: parent.data } })
+    }
+  },
+  Result: {
+    question: async (parent) => {
+      return await Question.findById(parent.question)
     }
   },
   City: {

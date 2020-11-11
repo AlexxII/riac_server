@@ -12,14 +12,15 @@ const typeDefs = gql`
     endDate: String!,
     code: String!,
     liter: String!,
-    sample: Int!,
-    complete: Int,
+    sample: Int!,                                      "// Выборка"
+    complete: Int,                                     "// Сколько закончено"
     questionsCount: Int,
     answersCount: Int,
-    type: Int!,
-    way: Int!,
+    type: Int!,                                        "// Тип опроса"
+    way: Int!,                                         "// Метод проведения"
     comment: String!,
     color: String!,
+    cities: [City],                                    "// Города проведения"
     questions: [Question]!,
     files: [PollFile],
     logic: Logic,
@@ -75,7 +76,8 @@ const typeDefs = gql`
     pollResults(id:String!): [Respondent],
     
     city(id: ID!): City,
-    cityCategories: [CityCategory]
+    cityCategories: [CityCategory],
+    pollCities(id: String!): [City]
   }
 
   type Topic {
