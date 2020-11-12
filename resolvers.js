@@ -216,6 +216,17 @@ module.exports = {
       }
       Logic.create(logicData)
     },
+    setPollCity: async (_, args) => {
+      const pollId = args.id
+      const cities = args.cities
+      console.log(...cities);
+      let poll = await Poll.findOne({ '_id': pollId })
+      poll.cities.push(...cities)
+      // await poll.save()
+      const city = await City.findOne({'_id': cities[0]})
+      return city
+      
+    },
     deletePoll(_, args) {
       const pollId = args.id
       Poll.findById(pollId, function (err, result) {
@@ -272,7 +283,6 @@ module.exports = {
         Question.findByIdAndUpdate({ "_id": qId }, { "order": questions[i].order }, function (err, result) {
           if (err) {
             answer = false
-            // break
           }
         })
       }

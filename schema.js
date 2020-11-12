@@ -132,6 +132,8 @@ const typeDefs = gql`
     cityEdit(id: String!, title: String!, population: Int!, category: String!): City!,
     deleteCity(id: String!): Boolean,
 
+    setPollCity(id: ID!, cities: [String]): City,
+
     addPoll(poll: PollWithConfig, questions: [QuestionInput], logic: LogicInput, topic: [TopicInput]): Poll,
     deletePoll(id: ID!): Poll,
     newLimit(id: ID!, limit: Int!): Boolean,
