@@ -133,7 +133,7 @@ module.exports = {
       const res = await city.deleteOne()
       return res._id === args.id
     },
-    addPoll(_, args) {
+    addPoll: async (_, args) => {
       const questions = args.questions
       const topics = args.topic
       const logic = args.logic
@@ -177,7 +177,7 @@ module.exports = {
         deleted: false,
         questions: questionsPool
       }
-      const poll = Poll.create(pollData)
+      const poll = await Poll.create(pollData)
       for (let i = 0; i < topics.length; i++) {
         const topicData = {
           _id: topics[i].id,
@@ -214,7 +214,8 @@ module.exports = {
         poll: pollId,
         path: logicFile
       }
-      Logic.create(logicData)
+      const res = await Logic.create(logicData)
+      return poll
     },
     setPollCity: async (_, args) => {
       const pollId = args.id
