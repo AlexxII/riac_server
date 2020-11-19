@@ -223,9 +223,12 @@ module.exports = {
       let poll = await Poll.findOne({ '_id': pollId })
       poll.cities.push(...cities)
       await poll.save()
-      const city = await City.findOne({'_id': cities[0]})
-      const res = [city]
-      return res
+      let result = []
+      for (let i = 0; i < cities.length; i++) {
+        const city = await City.findOne({ '_id': cities[i] })
+        result.push(city)
+      }
+      return result
     },
     deleteCityFromActive: async (_, args) => {
       const pollId = args.id
