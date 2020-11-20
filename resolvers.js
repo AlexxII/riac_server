@@ -223,12 +223,12 @@ module.exports = {
       let poll = await Poll.findOne({ '_id': pollId })
       poll.cities.push(...cities)
       await poll.save()
-      let result = []
-      for (let i = 0; i < cities.length; i++) {
-        const city = await City.findOne({ '_id': cities[i] })
-        result.push(city)
-      }
-      return result
+      // let result = []
+      // for (let i = 0; i < cities.length; i++) {
+      //   const city = await City.findOne({ '_id': cities[i] })
+      //   result.push(city)
+      // }
+      return poll
     },
     deleteCityFromActive: async (_, args) => {
       const pollId = args.id
@@ -236,7 +236,7 @@ module.exports = {
       let poll = await Poll.findOne({ '_id': pollId })
       poll.cities = poll.cities.filter(id => !cities.includes(id))
       await poll.save()
-      return true
+      return poll
     },
     deletePoll(_, args) {
       const pollId = args.id
