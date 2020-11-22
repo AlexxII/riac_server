@@ -60,25 +60,6 @@ const typeDefs = gql`
     deleted: Boolean!
   }
 
-  type Query {
-    currentUser: User,
-    polls: [Poll],
-    poll(id: ID!): Poll,
-    questions: [Question],
-    answers: [Answer],
-    logics: [Logic],
-    cities: [City],
-    question(id: ID!): Question,
-    logicById(id:ID!): Logic,
-    pollLogic(id:ID!): Logic,
-
-    result(id:ID!): [Respondent],
-    pollResults(id:String!): [Respondent],
-    
-    city(id: ID!): City,
-    cityCategories: [CityCategory],
-    pollCities(id: String!): [City]
-  }
 
   type Topic {
     id: String!,
@@ -112,6 +93,7 @@ const typeDefs = gql`
     id: String!,
     poll: Poll!,
     city: City,
+    user: User,
     result: [Result]!
   }
 
@@ -121,6 +103,29 @@ const typeDefs = gql`
     question: Question!,
     code: String!,
     text: String
+  }
+
+  type Query {
+    currentUser: User,
+    polls: [Poll],
+    poll(id: ID!): Poll,
+    questions: [Question],
+    answers: [Answer],
+    logics: [Logic],
+
+    cities: [City],
+    intervievers: [User],
+
+    question(id: ID!): Question,
+    logicById(id:ID!): Logic,
+    pollLogic(id:ID!): Logic,
+
+    result(id:ID!): [Respondent],
+    pollResults(id:String!): [Respondent],
+    
+    city(id: ID!): City,
+    cityCategories: [CityCategory],
+    pollCities(id: String!): [City]
   }
 
   type Mutation {
@@ -137,11 +142,14 @@ const typeDefs = gql`
 
     addPoll(poll: PollWithConfig, questions: [QuestionInput], logic: LogicInput, topic: [TopicInput]): Poll,
     deletePoll(id: ID!): Poll,
-    newLimit(id: ID!, limit: Int!): Boolean,
-    newOrder(neworder: [ReorderedArray]): Boolean,
+
+    newLimit(id: ID!, limit: Int!): Question,
+    newOrder(neworder: [ReorderedArray]): [Question],
+
     saveConfig(path: String!, text: String!): Boolean,
 
-    saveResult(poll: String!, city: String!, user: String!, pool: [String], data: [ResultData]): Boolean
+    saveResult(poll: String!, city: String!, user: String!, pool: [String], data: [ResultData]): Boolean,
+    deleteResults(results: [String]): [Respondent]
   }
 
   input ResultData {

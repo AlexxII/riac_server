@@ -10,6 +10,7 @@ const PollFile = require('./models/polls/pollfile')
 const Topic = require('./models/polls/topic')
 const Logic = require('./models/polls/logic')
 const City = require('./models/polls/city');
+const User = require('./models/common/user');
 const Respondent = require('./models/polls/respondent');
 const Result = require('./models/polls/result')
 
@@ -35,6 +36,9 @@ module.exports = {
     cities: () => {
       return City.find({})
     },
+    intervievers: async () => {
+      return await User.find({})
+    },
     cityCategories: () => {
       return cityCategories
     },
@@ -54,15 +58,14 @@ module.exports = {
     pollResults: async (_, args) => {
       let res = await Respondent.find({ "poll": args.id }).exec()
       const poll = args.id;
-      const cities = [
-        "006699c4-fe40-4228-a215-7590e3f76a33",
-        "2ef0b09a-f347-4124-bf11-b2339a2038fe",
-        "6b87c505-a3a6-4218-9702-69e02c01a2e0",
-        "b73cf620-e446-4b3a-b886-4d8bc53af3ad",
-        "bcc39e02-82f4-481c-8140-7017eef809db",
-        "c0a2fdf5-0b01-4d93-a8ec-b4997fdfdc82",
-        "cffa5357-e4c5-4269-9e1d-3174078e0ff0"
-      ];
+      // генерация пула городов
+      const qCities = await City.find({}).select("_id")
+      const cities = qCities.map(city => city.id)
+      const citiesCount = cities.length
+      // генерация пула пользователей
+      const qUsers = await User.find({}).select("_id")
+      const users = qUsers.map(user => user.id)
+      const usersCount = users.length
       const mainCount = 0;
       for (let i = 0; i < mainCount; i++) {
         let data = []
@@ -74,7 +77,8 @@ module.exports = {
           data,
           id: uuidv4(),
           poll,
-          city: cities[randomInteger(0, 6)],
+          user: users[randomInteger(0, usersCount - 1)],
+          city: cities[randomInteger(0, citiesCount - 1)],
           _v: 0
         })
       }
@@ -223,11 +227,6 @@ module.exports = {
       let poll = await Poll.findOne({ '_id': pollId })
       poll.cities.push(...cities)
       await poll.save()
-      // let result = []
-      // for (let i = 0; i < cities.length; i++) {
-      //   const city = await City.findOne({ '_id': cities[i] })
-      //   result.push(city)
-      // }
       return poll
     },
     deleteCityFromActive: async (_, args) => {
@@ -276,28 +275,24 @@ module.exports = {
         }
       })
     },
-    newLimit(_, args) {
+    newLimit: async (_, args) => {
       const questionId = args.id
       const limit = args.limit
-      // return Question.findByIdAndUpdate({ "_id": questionId }, { "limit": limit }, { new: true })
-      Question.findByIdAndUpdate({ "_id": questionId }, { "limit": limit }, function (err, result) {
-        return err ? false : true
-      })
-      return true
+      return await Question.findByIdAndUpdate({ "_id": questionId }, { "limit": limit }, { new: true })
     },
-    newOrder(_, args) {
+    newOrder: async (_, args) => {
       const questions = args.neworder
       const qLength = questions.length
       let answer = true
+      let result = []
       for (let i = 0; i < qLength; i++) {
         const qId = questions[i].id
-        Question.findByIdAndUpdate({ "_id": qId }, { "order": questions[i].order }, function (err, result) {
-          if (err) {
-            answer = false
-          }
-        })
+        const question = await Question.findOne({ '_id': qId })
+        question.order = questions[i].order
+        await question.save()
+        result.push(question)
       }
-      return true
+      return await result
     },
     saveConfig(_, args) {
       const filePath = args.path
@@ -327,6 +322,7 @@ module.exports = {
       const resp = {
         _id: respondentId,
         poll: args.poll,
+        user: args.user,
         city: args.city,
         data: resultPool
       }
@@ -336,6 +332,23 @@ module.exports = {
       } else {
         return false
       }
+    },
+    deleteResults: async (_, args) => {
+      const respondents = args.results
+      const returnResult = []
+      for (let i = 0; i < respondents.length; i++) {
+        const rID = respondents[i]
+        const respondent = await Respondent.findOne({ "_id": rID })
+        const results = respondent.data
+        const rLength = results.length
+        for (let i = 0; i < rLength; i++) {
+          const result = Result.findOne({ "_id": results[i] })
+          await result.deleteOne()
+        }
+        returnResult.push(respondent)
+        await respondent.deleteOne()
+      }
+      return returnResult
     }
   },
   Poll: {
@@ -382,6 +395,9 @@ module.exports = {
     },
     city: async (parent) => {
       return await City.findById(parent.city)
+    },
+    user: async (parent) => {
+      return await User.findById(parent.user)
     },
     result: async (parent) => {
       return await Result.find({ "_id": { $in: parent.data } })
