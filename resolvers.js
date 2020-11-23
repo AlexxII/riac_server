@@ -322,8 +322,11 @@ module.exports = {
       const resp = {
         _id: respondentId,
         poll: args.poll,
-        user: args.user,
         city: args.city,
+        user: args.user,
+        created: new Date(),
+        lastModified: new Date(),
+        processed: false,
         data: resultPool
       }
       const res = await Respondent.create(resp)
@@ -398,6 +401,12 @@ module.exports = {
     },
     user: async (parent) => {
       return await User.findById(parent.user)
+    },
+    created: (parent) => {
+      return moment(parent.created).format('DD.MM.YYYY')
+    },
+    lastModified: (parent) => {
+      return moment(parent.lastModified).format('DD.MM.YYYY')
     },
     result: async (parent) => {
       return await Result.find({ "_id": { $in: parent.data } })

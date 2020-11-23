@@ -94,6 +94,9 @@ const typeDefs = gql`
     poll: Poll!,
     city: City,
     user: User,
+    created: String,
+    lastModified: String,
+    processed: Boolean,
     result: [Result]!
   }
 

@@ -6,6 +6,9 @@ const respondentSchema = new Schema({
   poll: String,
   city: String,
   user: String,
+  created: Date,
+  lastModified: Date,
+  processed: Boolean,
   data: [String]
 })
 
