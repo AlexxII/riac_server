@@ -39,7 +39,6 @@ passport.serializeUser((user, done) => {
   done(null, user);
 });
 
-
 passport.deserializeUser((id, done) => {
   User.findById(id, (err, user) => {
     done(err, user)
@@ -48,8 +47,8 @@ passport.deserializeUser((id, done) => {
 
 // REDIS!!!!!!! нужно добавить
 passport.use(
-  new GraphQLLocalStrategy((username, password, done) => {
-    User.findOne({ username: username }, (err, user) => {
+  new GraphQLLocalStrategy((login, password, done) => {
+    User.findOne({ login: login }, (err, user) => {
       return err
         ? done(err)
         : user

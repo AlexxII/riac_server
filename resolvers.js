@@ -14,14 +14,20 @@ const User = require('./models/common/user');
 const Respondent = require('./models/polls/respondent');
 const Result = require('./models/polls/result')
 
-const cityCategories = require('./global_constants')
+const cityCategories = require('./config/poll_constants')
+const {userStatus, userRights} = require('./config/auth')
+// const userRights = require('./config/auth')
 
 const { GraphQLScalarType } = require('graphql');
 const moment = require('moment')
 
 module.exports = {
   Query: {
+    users: () => User.find({}).select('id username login status rights'),
     currentUser: (_, __, context) => context.getUser(),
+    userRights: () => userRights,
+    userStatus: () => userStatus,
+
     polls: () => Poll.find({}),
     poll: (_, args) => Poll.findById(args.id),
     questions: () => {
@@ -87,7 +93,7 @@ module.exports = {
   },
   Mutation: {
     signup: async (_, { username, password }, context) => {
-      const res = await Logic.findOne({ "username": username }).exec()
+      const res = await User.findOne({ "username": username }).exec()
       if (res) {
         throw new Error('Пользователь с таким ИМЕНЕМ уже существует');
       } else {
@@ -100,8 +106,8 @@ module.exports = {
         return { user: newUser }
       }
     },
-    signin: async (_, { username, password }, context) => {
-      const { user } = await context.authenticate('graphql-local', { username, password });
+    signin: async (_, { login, password }, context) => {
+      const { user } = await context.authenticate('graphql-local', { login, password });
       if (!user) {
         throw new AuthenticationError('Такого пользователя не существует');
       } else {
@@ -352,6 +358,14 @@ module.exports = {
         await respondent.deleteOne()
       }
       return returnResult
+    }
+  },
+  User: {
+    status: (parent) => {
+      return userStatus.filter(({ value }) => value === parent.status)[0]
+    },
+    rights: (parent) => {
+      return userRights.filter(({ value }) => value === parent.rights)[0]
     }
   },
   Poll: {

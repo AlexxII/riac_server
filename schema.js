@@ -60,7 +60,6 @@ const typeDefs = gql`
     deleted: Boolean!
   }
 
-
   type Topic {
     id: String!,
     title: String!
@@ -109,7 +108,11 @@ const typeDefs = gql`
   }
 
   type Query {
+    users: [User],
+    userRights: [UserRights],
+    userStatus: [UserStatus],
     currentUser: User,
+
     polls: [Poll],
     poll(id: ID!): Poll,
     questions: [Question],
@@ -133,8 +136,8 @@ const typeDefs = gql`
 
   type Mutation {
     logout: Boolean,
-    signin(username: String!, password: String!): AuthPayload,
-    signup(username: String!, password: String!): AuthPayload,
+    signin(login: String!, password: String!): AuthPayload,
+    signup(login: String!, password: String!): AuthPayload,
 
     newCity(title: String!, population: Int!, category: String!): City!,
     cityEdit(id: String!, title: String!, population: Int!, category: String!): City!,
@@ -217,12 +220,31 @@ const typeDefs = gql`
   type User {
     id: String,
     username: String,
+    login: String,
     password: String,
+    status: UserStatus,
+    rights: UserRights
   }
 
-  enum Role {
+  type UserStatus {
+    value: String,
+    label: String
+  }
+
+  type UserRights {
+    value: String,
+    label: String
+  }
+
+  enum Status {
+    MILITARY
+    CIVILIAN
+  }
+
+  enum Rights {
     SUPERADMIN
     ADMIN
+    OPERATOR
     USER
     GUEST
   }
