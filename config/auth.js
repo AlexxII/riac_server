@@ -3,7 +3,7 @@ const userRights = [
     value: '9ae6f1c3-d693-4e1f-9766-3247724dfbdd',
     label: 'Суперадмин'
   }, {
-    value: '9ae6f1c3-d693-4e1f-9766-3247724dfbdd',
+    value: 'dc87da3b-c15f-4158-a5fb-959dce98ed36',
     label: 'Администратор'
   }, {
     value: '6d66d383-eb8a-4c9a-9702-f4b6c69e1063',

@@ -15,7 +15,7 @@ const Respondent = require('./models/polls/respondent');
 const Result = require('./models/polls/result')
 
 const cityCategories = require('./config/poll_constants')
-const {userStatus, userRights} = require('./config/auth')
+const { userStatus, userRights } = require('./config/auth')
 // const userRights = require('./config/auth')
 
 const { GraphQLScalarType } = require('graphql');
@@ -23,9 +23,9 @@ const moment = require('moment')
 
 module.exports = {
   Query: {
-    users: () => User.find({}).select('id username login status rights'),
+    users: () => User.find({ rights: { $ne: userRights[0].value }}).select('id username login status rights'),
     currentUser: (_, __, context) => context.getUser(),
-    userRights: () => userRights,
+    userRights: () => userRights.slice(1),
     userStatus: () => userStatus,
 
     polls: () => Poll.find({}),
@@ -92,6 +92,36 @@ module.exports = {
     }
   },
   Mutation: {
+    addNewUser: async (_, args) => {
+      const user = {
+        _id: uuidv4(),
+        username: args.user.username,
+        login: args.user.login,
+        password: args.user.password,
+        status: args.user.status,
+        rights: args.user.rights,
+      }
+      const res = await User.create(user)
+      return res
+    },
+    deleteUsers: async (_, args) => {
+      const users = args.users
+      let result = []
+      for (let i = 0; i < users.length; i++) {
+        const userId = users[i]
+        const user = await User.findOne({ "_id": userId })
+        if (user.rights !== userRights[0].value) {
+          user.deleteOne()
+          result.push(user)
+        }
+      }
+      console.log(result);
+      return result
+    },
+    updateUser: async (_, args) => {
+      const userId = args.id
+      console.log(args.data);
+    },
     signup: async (_, { username, password }, context) => {
       const res = await User.findOne({ "username": username }).exec()
       if (res) {

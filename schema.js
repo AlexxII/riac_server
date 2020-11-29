@@ -135,10 +135,12 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    logout: Boolean,
+    addNewUser(user: UserDataCreate): User,
+    deleteUsers(users: [String]): [User],
+    updateUser(id: String, data: UserDataUpdate): User,
     signin(login: String!, password: String!): AuthPayload,
-    signup(login: String!, password: String!): AuthPayload,
-
+    logout: Boolean,
+    
     newCity(title: String!, population: Int!, category: String!): City!,
     cityEdit(id: String!, title: String!, population: Int!, category: String!): City!,
     deleteCity(id: String!): Boolean,
@@ -156,6 +158,21 @@ const typeDefs = gql`
 
     saveResult(poll: String!, city: String!, user: String!, pool: [String], data: [ResultData]): Boolean,
     deleteResults(results: [String]): [Respondent]
+  }
+
+  input UserDataCreate {
+    username: String!,
+    login: String!,
+    password: String!,
+    status: String!,
+    rights: String
+  }
+
+  input UserDataUpdate {
+    username: String,
+    login: String,
+    status: String,
+    rights: String
   }
 
   input ResultData {
