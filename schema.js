@@ -245,13 +245,14 @@ const typeDefs = gql`
   }
 
   type UserStatus {
-    value: String,
-    label: String
+    id: String,
+    title: String
   }
 
   type UserRights {
-    value: String,
-    label: String
+    id: String,
+    title: String,
+    flag: Int
   }
 
   enum Status {

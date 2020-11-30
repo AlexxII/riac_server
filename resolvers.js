@@ -11,10 +11,12 @@ const Topic = require('./models/polls/topic')
 const Logic = require('./models/polls/logic')
 const City = require('./models/polls/city');
 const User = require('./models/common/user');
+const UserStatus = require('./models/common/userStatus');
+const UserRights = require('./models/common/rights');
 const Respondent = require('./models/polls/respondent');
 const Result = require('./models/polls/result')
 
-const cityCategories = require('./config/poll_constants')
+const { cityCategories } = require('./config/poll_constants')
 const { userStatus, userRights } = require('./config/auth')
 // const userRights = require('./config/auth')
 
@@ -23,10 +25,11 @@ const moment = require('moment')
 
 module.exports = {
   Query: {
-    users: () => User.find({ rights: { $ne: userRights[0].value } }).select('id username login status rights'),
+    users: () => User.find({ default: { $ne: true } }).select('id username login status rights'),
+    // users: () => User.find().select('id username login status rights'),
     currentUser: (_, __, context) => context.getUser(),
-    userRights: () => userRights.slice(1),
-    userStatus: () => userStatus,
+    userRights: () => UserRights.find({ flag: { $ne: 0 } }),
+    userStatus: () => UserStatus.find({}),
 
     polls: () => Poll.find({}),
     poll: (_, args) => Poll.findById(args.id),
@@ -398,19 +401,21 @@ module.exports = {
     }
   },
   User: {
-    status: (parent) => {
-      return userStatus.filter(({ value }) => value === parent.status)[0]
+    status: async (parent) => {
+      const result = await UserStatus.find({ "_id": parent.status })
+      return result[0]
     },
-    rights: (parent) => {
-      return userRights.filter(({ value }) => value === parent.rights)[0]
+    rights: async (parent) => {
+      const result = await UserRights.find({ "_id": parent.rights })
+      return result[0]
     }
   },
   Poll: {
-    questions: (parent) => {
-      return Question.find({ "poll": parent._id }).sort('order')
+    questions: async (parent) => {
+      return await Question.find({ "poll": parent._id }).sort('order')
     },
-    files: (parent) => {
-      return PollFile.find({ "_id": { $in: parent.files } })
+    files: async (parent) => {
+      return await PollFile.find({ "_id": { $in: parent.files } })
     },
     liter: (parent) => {
       const reg = /\D{3}/
@@ -420,16 +425,15 @@ module.exports = {
     questionsCount: (parent) => {
       return parent.questions.length
     },
-    answersCount: (parent) => {
-      return Answer.find({ "poll": parent._id }).count()
+    answersCount: async (parent) => {
+      return await Answer.find({ "poll": parent._id }).count()
     },
-    cities: (parent) => {
-      return City.find({ "_id": { $in: parent.cities } })
+    cities: async (parent) => {
+      return await City.find({ "_id": { $in: parent.cities } })
     },
     color: () => 'red',
     logic: async (parent) => {
-      const res = await Logic.findOne({ "poll": parent._id })
-      return res
+      return await Logic.findOne({ "poll": parent._id })
     },
     startDate: parent => {
       return moment(parent.startDate).format('DD.MM.YYYY')
@@ -439,8 +443,8 @@ module.exports = {
     }
   },
   Question: {
-    answers: (parent) => {
-      return Answer.find({ "_id": { $in: parent.answers } }).sort('order')
+    answers: async (parent) => {
+      return await Answer.find({ "_id": { $in: parent.answers } }).sort('order')
     }
   },
   Respondent: {

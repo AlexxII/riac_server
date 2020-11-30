@@ -1,3 +1,4 @@
+/*
 const userRights = [
   {
     value: '9ae6f1c3-d693-4e1f-9766-3247724dfbdd',
@@ -16,7 +17,21 @@ const userRights = [
     label: 'Гость'
   }
 ];
+*/
+const userRightsTml = [
+  'Суперадмин',
+  'Администратор',
+  'Оператор',
+  'Пользователь',
+  'Гость'
+]
 
+const userStatusTml = [
+  'Военнослужащий',
+  'Гражданский служащий'
+]
+
+/*
 const userStatus = [
   {
     value: 'acb08570-ecb0-437e-ae45-0450cf7a8ae4',
@@ -27,6 +42,6 @@ const userStatus = [
     label: 'Гражданский служащий'
   }
 ]
+*/
 
-
-module.exports = { userRights, userStatus };
+module.exports = { userRightsTml, userStatusTml };
