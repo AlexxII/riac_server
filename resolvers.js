@@ -23,7 +23,7 @@ const moment = require('moment')
 
 module.exports = {
   Query: {
-    users: () => User.find({ rights: { $ne: userRights[0].value }}).select('id username login status rights'),
+    users: () => User.find({ rights: { $ne: userRights[0].value } }).select('id username login status rights'),
     currentUser: (_, __, context) => context.getUser(),
     userRights: () => userRights.slice(1),
     userStatus: () => userStatus,
@@ -103,6 +103,21 @@ module.exports = {
       }
       const res = await User.create(user)
       return res
+      /*
+            const res = await User.findOne({ "username": username }).exec()
+            if (res) {
+              throw new Error('Пользователь с таким ИМЕНЕМ уже существует');
+            } else {
+              const newUser = {
+                _id: uuidv4(),
+                username,
+                password
+              };
+              context.User.create(newUser)
+              return { user: newUser }
+            }
+      */
+
     },
     deleteUsers: async (_, args) => {
       const users = args.users
@@ -115,26 +130,18 @@ module.exports = {
           result.push(user)
         }
       }
-      console.log(result);
       return result
     },
     updateUser: async (_, args) => {
       const userId = args.id
-      console.log(args.data);
+      const data = args.data
+      const user = await User.findByIdAndUpdate(userId, data)
+      return user
     },
-    signup: async (_, { username, password }, context) => {
-      const res = await User.findOne({ "username": username }).exec()
-      if (res) {
-        throw new Error('Пользователь с таким ИМЕНЕМ уже существует');
-      } else {
-        const newUser = {
-          _id: uuidv4(),
-          username,
-          password
-        };
-        context.User.create(newUser)
-        return { user: newUser }
-      }
+    resetPassword: async (_, args) => {
+      const userId = args.id
+      const password = args.password
+      const user = await User.findByIdAndUpdate(userId, { password: password }, { new: true })
     },
     signin: async (_, { login, password }, context) => {
       const { user } = await context.authenticate('graphql-local', { login, password });

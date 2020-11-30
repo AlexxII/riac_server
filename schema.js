@@ -139,6 +139,7 @@ const typeDefs = gql`
     deleteUsers(users: [String]): [User],
     updateUser(id: String, data: UserDataUpdate): User,
     signin(login: String!, password: String!): AuthPayload,
+    resetPassword(id: String, password: String): Boolean,
     logout: Boolean,
     
     newCity(title: String!, population: Int!, category: String!): City!,
