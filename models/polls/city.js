@@ -5,7 +5,8 @@ const citySchema = new Schema({
   _id: String,
   title: String,
   population: Number,
-  category: String
+  category: String,
+  active: Boolean
 })
 
 module.exports = mongoose.model('Cities', citySchema)

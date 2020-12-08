@@ -47,7 +47,8 @@ const typeDefs = gql`
     shortTitle: String!,
     code: String!,
     parentPool: ID!,
-    order: Int!
+    order: Int!,
+    results: [Result]
   }
 
   type PollFile {
@@ -74,13 +75,16 @@ const typeDefs = gql`
   type City {
     id: ID!,
     title: String!,
-    population: Int!,
-    category: CityCategory!
+    population: Int,
+    category: CityCategory
   }
 
   type CityCategory {
-    value: String!,
-    label: String!
+    id: String!,
+    title: String!,
+    order: Int,
+    default: Boolean,
+    active: Boolean
   }
 
   input ReorderedArray {
@@ -103,6 +107,7 @@ const typeDefs = gql`
     id: String!,
     respondent: Respondent!,
     question: Question!,
+    answer: String!,
     code: String!,
     text: String
   }
@@ -120,6 +125,10 @@ const typeDefs = gql`
     logics: [Logic],
 
     cities: [City],
+    city(id: ID!): City,
+    cityCategories: [CityCategory],
+    pollCities(id: String!): [City]
+
     intervievers: [User],
 
     question(id: ID!): Question,
@@ -127,11 +136,7 @@ const typeDefs = gql`
     pollLogic(id:ID!): Logic,
 
     result(id:ID!): [Respondent],
-    pollResults(id:String!): [Respondent],
-    
-    city(id: ID!): City,
-    cityCategories: [CityCategory],
-    pollCities(id: String!): [City]
+    pollResults(id:String!): [Respondent]
   }
 
   type Mutation {
@@ -144,7 +149,7 @@ const typeDefs = gql`
     
     newCity(title: String!, population: Int!, category: String!): City!,
     cityEdit(id: String!, title: String!, population: Int!, category: String!): City!,
-    deleteCity(id: String!): Boolean,
+    deleteCity(id: String!): City,
 
     setPollCity(id: ID!, cities: [String]): Poll,
     deleteCityFromActive(id: ID!, cities: [String]): Poll,
@@ -182,12 +187,9 @@ const typeDefs = gql`
   }
 
   input resultInput {
-    code: String!
+    answer: String!,
+    code: String!,
     text: String
-  }
-
-  input CityType {
-    value: String!
   }
 
   input PollWithConfig {
@@ -246,13 +248,19 @@ const typeDefs = gql`
 
   type UserStatus {
     id: String,
-    title: String
+    title: String,
+    order: Int,
+    default: Boolean,
+    active: Boolean
   }
 
   type UserRights {
     id: String,
     title: String,
-    flag: Int
+    order: Int,
+    default: Boolean,
+    root: Boolean,
+    active: Boolean
   }
 
   enum Status {

@@ -4,7 +4,10 @@ const Schema = mongoose.Schema
 const rightsSchema = new Schema({
   _id: String,
   title: String,
-  flag: Number
+  order: Number,
+  default: Boolean,
+  root: Boolean,
+  active: Boolean
 })
 
 module.exports = mongoose.model('Rights', rightsSchema)

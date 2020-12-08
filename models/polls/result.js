@@ -5,6 +5,7 @@ const resultSchema = new Schema({
   _id: String,
   respondent: String,
   question: String,
+  answer: String,
   code: String,
   text: String
 })

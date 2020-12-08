@@ -2,10 +2,12 @@ const { v4: uuidv4 } = require('uuid');
 const mongoose = require('mongoose')
 
 const { userRightsTml, userStatusTml } = require('./config/auth')
+const { cityCategoriesTml } = require('./config/poll_constants')
 
 const User = require('./models/common/user')
 const Rights = require('./models/common/rights')
 const UserStatus = require('./models/common/userStatus')
+const CityCategory = require('./models/common/citycategory')
 
 mongoose.connect('mongodb://localhost:27017/poll', { useNewUrlParser: true });
 const dbConnection = mongoose.connection
@@ -16,7 +18,10 @@ dbConnection.once('open', () => console.log('Connected to DB!'))
 const rights = Rights.create({
   _id: uuidv4(),
   title: userRightsTml[0],
-  flag: 0
+  order: 0,
+  default: true,
+  root: true,
+  active: true
 }, (err, data) => {
   if (err) {
     console.log('Ошибка при создании БД - права пользователя', err);
@@ -28,9 +33,10 @@ const rights = Rights.create({
       username: 'Администратор по умолчанию',
       login: 'root',
       password: 'vinegar',
-      default: true,
       status: '',
-      rights: data._id
+      rights: data._id,
+      default: true,
+      active: true
     }
     User.create(superAdmin)
   } catch (e) {
@@ -45,7 +51,10 @@ for (let i = 1; i < userRightsTml.length; i++) {
     const r = {
       _id: uuidv4(),
       title: userRightsTml[i],
-      flag: 1
+      order: i,
+      default: true,
+      root: false,
+      active: true
     }
     Rights.create(r)
   } catch (e) {
@@ -59,11 +68,30 @@ for (let i = 0; i < userStatusTml.length; i++) {
   try {
     UserStatus.create({
       _id: uuidv4(),
-      title: userStatusTml[i]
+      title: userStatusTml[i],
+      order: i,
+      default: true,
+      active: true
+    })
+  } catch (e) {
+    console.log('Ошибка при создании БД - статус пользователя', e);
+    mongoose.disconnect();                                                                          // отключение от базы данных
+  }
+}
+
+// добавление ТИПА ГОРОДОВ в БД
+for (let i = 0; i < cityCategoriesTml.length; i++) {
+  try {
+    CityCategory.create({
+      _id: uuidv4(),
+      title: cityCategoriesTml[i],
+      order: i,
+      default: true,
+      active: true
     }, () => {
       // ноебходимо отсоединится от БД
-      if (i === userStatusTml.length - 1) {
-        mongoose.disconnect();                                                                          // отключение от базы данных
+      if (i === cityCategoriesTml.length - 1) {
+        mongoose.disconnect();                                                                      // отключение от базы данных
       }
     })
   } catch (e) {

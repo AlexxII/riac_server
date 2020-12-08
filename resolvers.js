@@ -10,47 +10,42 @@ const PollFile = require('./models/polls/pollfile')
 const Topic = require('./models/polls/topic')
 const Logic = require('./models/polls/logic')
 const City = require('./models/polls/city');
+const CityCategory = require('./models/common/citycategory')
 const User = require('./models/common/user');
 const UserStatus = require('./models/common/userStatus');
 const UserRights = require('./models/common/rights');
 const Respondent = require('./models/polls/respondent');
 const Result = require('./models/polls/result')
 
-const { cityCategories } = require('./config/poll_constants')
-const { userStatus, userRights } = require('./config/auth')
-// const userRights = require('./config/auth')
-
 const { GraphQLScalarType } = require('graphql');
 const moment = require('moment')
 
 module.exports = {
   Query: {
-    users: () => User.find({ default: { $ne: true } }).select('id username login status rights'),
+    users: async () => await User.find({ default: { $ne: true } }).select('id username login status rights'),
     // users: () => User.find().select('id username login status rights'),
     currentUser: (_, __, context) => context.getUser(),
-    userRights: () => UserRights.find({ flag: { $ne: 0 } }),
-    userStatus: () => UserStatus.find({}),
+    userRights: async () => await UserRights.find({ root: { $ne: true } }).sort('order'),
+    userStatus: async () => await UserStatus.find({}).sort('order'),
 
-    polls: () => Poll.find({}),
-    poll: (_, args) => Poll.findById(args.id),
-    questions: () => {
-      return Question.find({});
+    polls: async () => await Poll.find({}),
+    poll: async (_, args) => await Poll.findById(args.id),
+    questions: async () => {
+      return await Question.find({});
     },
-    answers: () => {
-      return Answer.find({});
+    answers: async () => {
+      return await Answer.find({});
     },
-    logics: () => {
-      return Logic.find({})
+    logics: async () => {
+      return await Logic.find({})
     },
-    cities: () => {
-      return City.find({})
+    cities: async () => {
+      return await City.find({})
     },
     intervievers: async () => {
       return await User.find({})
     },
-    cityCategories: () => {
-      return cityCategories
-    },
+    cityCategories: async () => await CityCategory.find({}).sort('order'),
     pollCities: (_, args) => {
       return City.find({})
     },
@@ -103,6 +98,8 @@ module.exports = {
         password: args.user.password,
         status: args.user.status,
         rights: args.user.rights,
+        default: false,
+        active: true
       }
       const res = await User.create(user)
       return res
@@ -123,12 +120,13 @@ module.exports = {
 
     },
     deleteUsers: async (_, args) => {
+      // TODO: УДАЛИТЬ или выставить флаг active -> false
       const users = args.users
       let result = []
       for (let i = 0; i < users.length; i++) {
         const userId = users[i]
         const user = await User.findOne({ "_id": userId })
-        if (user.rights !== userRights[0].value) {
+        if (!user.root) {
           user.deleteOne()
           result.push(user)
         }
@@ -138,7 +136,7 @@ module.exports = {
     updateUser: async (_, args) => {
       const userId = args.id
       const data = args.data
-      const user = await User.findByIdAndUpdate(userId, data)
+      const user = await User.findByIdAndUpdate(userId, data, { new: true })
       return user
     },
     resetPassword: async (_, args) => {
@@ -167,6 +165,7 @@ module.exports = {
       return res
     },
     cityEdit: async (_, args) => {
+      console.log(args);
       const filter = { _id: args.id }
       const update = {
         title: args.title,
@@ -181,7 +180,7 @@ module.exports = {
     deleteCity: async (_, args) => {
       const city = await City.findOne({ _id: args.id })
       const res = await city.deleteOne()
-      return res._id === args.id
+      return res
     },
     addPoll: async (_, args) => {
       const questions = args.questions
@@ -322,11 +321,15 @@ module.exports = {
       })
     },
     newLimit: async (_, args) => {
+      let ll = ''
+      ll.filter()
       const questionId = args.id
       const limit = args.limit
       return await Question.findByIdAndUpdate({ "_id": questionId }, { "limit": limit }, { new: true })
     },
     newOrder: async (_, args) => {
+      let ll = ''
+      ll.filter()
       const questions = args.neworder
       const qLength = questions.length
       let answer = true
@@ -358,6 +361,7 @@ module.exports = {
             _id: uuidv4(),
             respondent: respondentId,
             question: questionId,
+            answer: answers[j].answer,
             code: answers[j].code,
             text: answers[j].text
           }
@@ -447,6 +451,11 @@ module.exports = {
       return await Answer.find({ "_id": { $in: parent.answers } }).sort('order')
     }
   },
+  Answer: {
+    results: async (parent) => {
+      return await Result.find({ "answer": parent._id })
+    }
+  },
   Respondent: {
     poll: async (parent) => {
       return await Poll.findById(parent.poll)
@@ -474,7 +483,8 @@ module.exports = {
   },
   City: {
     category: async (parent) => {
-      return cityCategories.filter(({ value }) => value === parent.category)[0]
+      return await CityCategory.findOne({ "_id": parent.category })
+      // return cityCategories.filter(({ value }) => value === parent.category)[0]
     }
   },
   PollLogic: new GraphQLScalarType({
