@@ -38,6 +38,7 @@ const typeDefs = gql`
     type: Int,
     order: Int,
     parentPool: ID!,
+    topic: Topic,
     answers: [Answer]
   }
 
@@ -48,7 +49,7 @@ const typeDefs = gql`
     code: String!,
     parentPool: ID!,
     order: Int!,
-    results: [Result]
+    results: [Result],
   }
 
   type PollFile {
@@ -123,6 +124,8 @@ const typeDefs = gql`
     questions: [Question],
     answers: [Answer],
     logics: [Logic],
+
+    topics: [Topic],
 
     cities: [City],
     city(id: ID!): City,

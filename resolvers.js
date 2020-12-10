@@ -55,6 +55,7 @@ module.exports = {
       const res = await Logic.findOne({ "poll": args.id }).exec()
       return res
     },
+    topics: async () => await Topic.find({}),
     result: async (_, args) => {
       const res = await Respondent.find({ "poll": args.id }).exec()
       return res
@@ -449,6 +450,10 @@ module.exports = {
   Question: {
     answers: async (parent) => {
       return await Answer.find({ "_id": { $in: parent.answers } }).sort('order')
+    },
+    topic: async (parent) => {
+      const rr = await Topic.findOne({ "_id": parent.topic })
+      return rr 
     }
   },
   Answer: {
