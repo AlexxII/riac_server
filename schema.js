@@ -113,6 +113,21 @@ const typeDefs = gql`
     text: String
   }
 
+  type Status {
+    value: String,
+    title: String
+  }
+
+  type Sex {
+    value: String,
+    title: String
+  }
+
+  type Age {
+    value: String,
+    title: String
+  }
+
   type Query {
     users: [User],
     userRights: [UserRights],
@@ -133,6 +148,9 @@ const typeDefs = gql`
     pollCities(id: String!): [City]
 
     intervievers: [User],
+    status: [Status],
+    sex: [Sex],
+    age: [Age],
 
     question(id: ID!): Question,
     logicById(id:ID!): Logic,
@@ -264,11 +282,6 @@ const typeDefs = gql`
     default: Boolean,
     root: Boolean,
     active: Boolean
-  }
-
-  enum Status {
-    MILITARY
-    CIVILIAN
   }
 
   enum Rights {

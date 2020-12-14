@@ -8,6 +8,7 @@ const userSchema = new Schema({
   password: String,
   default: Boolean,
   status: String,
+  order: Number,
   rights: String
 })
 

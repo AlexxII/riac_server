@@ -22,7 +22,7 @@ const moment = require('moment')
 
 module.exports = {
   Query: {
-    users: async () => await User.find({ default: { $ne: true } }).select('id username login status rights'),
+    users: async () => await User.find({ default: { $ne: true } }).select('id username login status rights').sort('order'),
     // users: () => User.find().select('id username login status rights'),
     currentUser: (_, __, context) => context.getUser(),
     userRights: async () => await UserRights.find({ root: { $ne: true } }).sort('order'),
@@ -44,6 +44,50 @@ module.exports = {
     },
     intervievers: async () => {
       return await User.find({})
+    },
+    status: () => {
+      return [
+        {
+          value: '0',
+          title: 'Не обработано'
+        },
+        {
+          value: '1',
+          title: 'Обработано'
+        }
+      ]
+    },
+    sex: () => {
+      return [
+        {
+          value: '0',
+          title: 'мужской'
+        },
+        {
+          value: '1',
+          title: 'женский'
+        }
+      ]
+    },
+    age: () => {
+      return [
+        {
+          value: '0',
+          title: '18-29 лет'
+        },
+        {
+          value: '1',
+          title: '30-49 лет'
+        },
+        {
+          value: '2',
+          title: '50-59 лет'
+        },
+        {
+          value: '3',
+          title: '60 лет и старше'
+        }
+      ]
     },
     cityCategories: async () => await CityCategory.find({}).sort('order'),
     pollCities: (_, args) => {
@@ -453,7 +497,7 @@ module.exports = {
     },
     topic: async (parent) => {
       const rr = await Topic.findOne({ "_id": parent.topic })
-      return rr 
+      return rr
     }
   },
   Answer: {
