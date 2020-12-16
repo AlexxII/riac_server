@@ -76,7 +76,7 @@ app.get('/files*', function (req, res) {
   res.download(filePath)
 })
 
-app.get('/*', function (req, res) {
+app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname, 'asset', 'index.html'));
 });
 

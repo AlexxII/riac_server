@@ -22,6 +22,7 @@ const typeDefs = gql`
     color: String!,
     cities: [City],                                    "// Города проведения"
     questions: [Question]!,
+    results: [Respondent],
     files: [PollFile],
     logic: Logic,
     active: Boolean!,

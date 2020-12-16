@@ -105,7 +105,8 @@ module.exports = {
       return res
     },
     pollResults: async (_, args) => {
-      let res = await Respondent.find({ "poll": args.id }).exec()
+      return await Respondent.find({ "poll": args.id }).exec()
+      // let res = await Respondent.find({ "poll": args.id }).exec()
       const poll = args.id;
       // генерация пула городов
       const qCities = await City.find({}).select("_id")
@@ -463,6 +464,9 @@ module.exports = {
     questions: async (parent) => {
       return await Question.find({ "poll": parent._id }).sort('order')
     },
+    results: async (parent) => {
+      return await Respondent.find({"poll": parent._id})
+    },
     files: async (parent) => {
       return await PollFile.find({ "_id": { $in: parent.files } })
     },
@@ -528,6 +532,9 @@ module.exports = {
   Result: {
     question: async (parent) => {
       return await Question.findById(parent.question)
+    },
+    respondent: async (parent) => {
+      return await Respondent.findOne({"_id": parent.respondent})
     }
   },
   City: {
