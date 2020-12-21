@@ -84,7 +84,13 @@ app.get('/vks', function (req, res) {
   res.sendFile(path.join(__dirname, 'vks', 'index.html'));
 });
 
-server.applyMiddleware({ app, cors: false })
+server.applyMiddleware({
+  app, 
+  cors: false,
+  bodyParserConfig: {
+    limit: '100mb'
+  }
+})
 
 app.listen({ port: PORT }, () =>
   console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`)
