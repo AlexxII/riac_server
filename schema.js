@@ -136,6 +136,7 @@ const typeDefs = gql`
     currentUser: User,
 
     polls: [Poll],
+    archivePolls: [Poll],
     poll(id: ID!): Poll,
     questions: [Question],
     answers: [Answer],
@@ -177,6 +178,7 @@ const typeDefs = gql`
     deleteCityFromActive(id: ID!, cities: [String]): Poll,
 
     addPoll(poll: PollWithConfig, questions: [QuestionInput], logic: LogicInput, topic: [TopicInput]): Poll,
+    savePollStatus(id: ID!, active:Boolean!): Poll,
     deletePoll(id: ID!): Poll,
 
     newLimit(id: ID!, limit: Int!): Question,

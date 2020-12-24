@@ -28,7 +28,8 @@ module.exports = {
     userRights: async () => await UserRights.find({ root: { $ne: true } }).sort('order'),
     userStatus: async () => await UserStatus.find({}).sort('order'),
 
-    polls: async () => await Poll.find({}),
+    polls: async () => await Poll.find({ active: { $ne: false } }).sort('startDate'),
+    archivePolls: async () => await Poll.find({ active: { $ne: true } }).sort('startDate'),
     poll: async (_, args) => await Poll.findById(args.id),
     questions: async () => {
       return await Question.find({});
@@ -328,6 +329,11 @@ module.exports = {
       await poll.save()
       return poll
     },
+    savePollStatus: async (_, args) => {
+      const pollId = args.id
+      const status = args.active
+      return await Poll.findByIdAndUpdate({ "_id": pollId }, { "active": status }, { new: true })
+    },
     deletePoll(_, args) {
       const pollId = args.id
       Poll.findById(pollId, function (err, result) {
@@ -465,7 +471,7 @@ module.exports = {
       return await Question.find({ "poll": parent._id }).sort('order')
     },
     results: async (parent) => {
-      return await Respondent.find({"poll": parent._id})
+      return await Respondent.find({ "poll": parent._id })
     },
     files: async (parent) => {
       return await PollFile.find({ "_id": { $in: parent.files } })
@@ -534,7 +540,7 @@ module.exports = {
       return await Question.findById(parent.question)
     },
     respondent: async (parent) => {
-      return await Respondent.findOne({"_id": parent.respondent})
+      return await Respondent.findOne({ "_id": parent.respondent })
     }
   },
   City: {
