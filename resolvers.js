@@ -373,8 +373,6 @@ module.exports = {
       })
     },
     newLimit: async (_, args) => {
-      let ll = ''
-      ll.filter()
       const questionId = args.id
       const limit = args.limit
       return await Question.findByIdAndUpdate({ "_id": questionId }, { "limit": limit }, { new: true })
