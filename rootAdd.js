@@ -1,8 +1,8 @@
 const { v4: uuidv4 } = require('uuid');
 const mongoose = require('mongoose')
 
-const { userRightsTml, userStatusTml } = require('./config/auth')
-const { cityCategoriesTml } = require('./config/poll_constants')
+const { userRightsTml, userStatusTml } = require('./constants/auth')
+const { cityCategoriesTml } = require('./constants/poll_constants')
 
 const User = require('./models/common/user')
 const Rights = require('./models/common/rights')

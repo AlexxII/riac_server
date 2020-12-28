@@ -7,6 +7,9 @@ const path = require('path');
 const cors = require('cors')
 const session = require('express-session')
 const { v4: uuidv4 } = require('uuid');
+
+require('dotenv').config();
+
 const passport = require('passport');
 const { GraphQLLocalStrategy, buildContext } = require('graphql-passport');
 const User = require('./models/common/user')
@@ -85,7 +88,7 @@ app.get('/vks', function (req, res) {
 });
 
 server.applyMiddleware({
-  app, 
+  app,
   cors: false,
   bodyParserConfig: {
     limit: '100mb'
