@@ -215,6 +215,10 @@ module.exports = {
       const res = await City.create(city)
       return res
     },
+    newCities: async (_, args) => {
+      console.log(args);
+      return args.cities
+    },
     cityEdit: async (_, args) => {
       console.log(args);
       const filter = { _id: args.id }

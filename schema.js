@@ -172,6 +172,7 @@ const typeDefs = gql`
     logout: Boolean,
     
     newCity(title: String!, population: Int!, category: String!): City!,
+    newCities(cities: [CityInput]): [City],
     cityEdit(id: String!, title: String!, population: Int!, category: String!): City!,
     deleteCity(id: String!): City,
 
@@ -259,6 +260,14 @@ const typeDefs = gql`
     exclude: PollLogic,
     freeAnswers: [String],
     unique: [String]
+  }
+
+  input CityInput {
+    title: String!,
+    order: Int!,
+    type: String!,
+    population: Int,
+    category: String
   }
 
   "======= USERS ========"
