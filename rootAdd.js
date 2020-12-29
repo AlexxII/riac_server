@@ -24,7 +24,7 @@ const rights = Rights.create({
   active: true
 }, (err, data) => {
   if (err) {
-    console.log('Ошибка при создании БД - права пользователя', err);
+    console.log('Ошибка при создании БД - права пользователя (СуперАдмин)', err);
     mongoose.disconnect();                                                                          // отключение от базы данных
   }
   try {
@@ -40,7 +40,7 @@ const rights = Rights.create({
     }
     User.create(superAdmin)
   } catch (e) {
-    console.log('Ошибка при создании БД - права пользователя', e);
+    console.log('Ошибка добавлении суперадмина', e);
     mongoose.disconnect();                                                                          // отключение от базы данных
   }
 })
@@ -95,7 +95,7 @@ for (let i = 0; i < cityCategoriesTml.length; i++) {
       }
     })
   } catch (e) {
-    console.log('Ошибка при создании БД - статус пользователя', e);
+    console.log('Ошибка при создании БД - категории населенных пунктов', e);
     mongoose.disconnect();                                                                          // отключение от базы данных
   }
 }
