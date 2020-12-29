@@ -5,7 +5,9 @@ const citySchema = new Schema({
   _id: String,
   title: String,
   population: Number,
+  type: String,
   category: String,
+  order: Number,
   active: Boolean
 })
 

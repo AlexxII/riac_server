@@ -78,6 +78,7 @@ const typeDefs = gql`
     id: ID!,
     title: String!,
     population: Int,
+    order: Int,
     category: CityCategory
   }
 

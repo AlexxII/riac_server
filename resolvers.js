@@ -9,7 +9,7 @@ const Answer = require('./models/polls/answer')
 const PollFile = require('./models/polls/pollfile')
 const Topic = require('./models/polls/topic')
 const Logic = require('./models/polls/logic')
-const City = require('./models/polls/city');
+const City = require('./models/common/city');
 const CityCategory = require('./models/common/citycategory')
 const User = require('./models/common/user');
 const UserStatus = require('./models/common/userStatus');
@@ -18,7 +18,8 @@ const Respondent = require('./models/polls/respondent');
 const Result = require('./models/polls/result')
 
 const { GraphQLScalarType } = require('graphql');
-const moment = require('moment')
+const moment = require('moment');
+const { findOne } = require('./models/polls/poll');
 
 module.exports = {
   Query: {
@@ -202,10 +203,13 @@ module.exports = {
     },
     logout: (_, __, context) => context.logout(),
     newCity: async (_, args) => {
+      const allCities = await City.find({}).sort('order')
+      const maxOrder = allCities[allCities.length - 1].order
       const city = {
         _id: uuidv4(),
         title: args.title,
         population: args.population,
+        order: maxOrder + 1,
         category: args.category
       }
       const res = await City.create(city)
