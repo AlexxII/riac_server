@@ -174,7 +174,7 @@ const typeDefs = gql`
     
     newCity(title: String!, type: String!, population: Int, category: String!): City!,
     newCities(cities: [CityInput]): [City],
-    cityEdit(id: String!, title: String!, population: Int!, category: String!): City!,
+    cityEdit(id: String!, type: String, title: String!, population: Int!, category: String!): City!,
     deleteCity(id: String!): City,
 
     setPollCity(id: ID!, cities: [String]): Poll,
