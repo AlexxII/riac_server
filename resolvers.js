@@ -236,11 +236,9 @@ module.exports = {
     },
     cityEdit: async (_, args) => {
       const filter = { _id: args.id }
-      console.log(args);
       const update = {
         ...args
       }
-      console.log(update);
       let city = await City.findOneAndUpdate(filter, update, {
         new: true
       })
