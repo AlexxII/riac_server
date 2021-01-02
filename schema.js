@@ -78,6 +78,7 @@ const typeDefs = gql`
     id: ID!,
     title: String!,
     population: Int,
+    type: String,
     order: Int,
     category: CityCategory
   }
@@ -171,7 +172,7 @@ const typeDefs = gql`
     resetPassword(id: String, password: String): Boolean,
     logout: Boolean,
     
-    newCity(title: String!, population: Int!, category: String!): City!,
+    newCity(title: String!, type: String!, population: Int, category: String!): City!,
     newCities(cities: [CityInput]): [City],
     cityEdit(id: String!, title: String!, population: Int!, category: String!): City!,
     deleteCity(id: String!): City,

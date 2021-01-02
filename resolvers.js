@@ -206,21 +206,35 @@ module.exports = {
       const allCities = await City.find({}).sort('order')
       const maxOrder = allCities[allCities.length - 1].order
       const city = {
+        ...args,
         _id: uuidv4(),
-        title: args.title,
-        population: args.population,
-        order: maxOrder + 1,
-        category: args.category
+        order: maxOrder + 1
       }
       const res = await City.create(city)
       return res
     },
     newCities: async (_, args) => {
-      console.log(args);
-      return args.cities
+      const lCities = args.cities.length
+      const cities = args.cities
+      const categories = await CityCategory.find({}).sort('order')
+      let result = []
+      for (let i = 0; i < lCities; i++) {
+        const category = categories[+cities[i].category]
+        if (category !== undefined) {
+          const city = {
+            ...cities[i],
+            category: category.id,
+            _id: uuidv4()
+          }
+          const res = await City.create(city)
+          result.push(res)
+        } else {
+          return false
+        }
+      }
+      return result
     },
     cityEdit: async (_, args) => {
-      console.log(args);
       const filter = { _id: args.id }
       const update = {
         title: args.title,
