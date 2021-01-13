@@ -322,6 +322,20 @@ module.exports = {
           }
         }
       }
+      // добавление шапки в конфиг файл
+      text += '[header]'
+      text += `${newLineChar}`
+      text += "АО 1508117"
+      text += `${newLineChar}`
+      text += "==/ОПРОС"
+      text += `${newLineChar}`
+      text += "00/{code}"
+      text += `${newLineChar}`
+      text += "02/{date}"
+      text += `${newLineChar}`
+      text += "UN/{int}"
+      text += `${newLineChar}`
+      text += "04/{city}"
       const t = +new Date
       const logicFile = `/files/polls/pollconfig_${t}.ini`
       fs.writeFileSync(`.${logicFile}`, text)

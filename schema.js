@@ -103,6 +103,7 @@ const typeDefs = gql`
     user: User,
     created: String,
     lastModified: String,
+    timestamp: Int,
     processed: Boolean,
     result: [Result]!
   }
