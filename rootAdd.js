@@ -1,5 +1,9 @@
 const { v4: uuidv4 } = require('uuid');
 const mongoose = require('mongoose')
+const fs = require('fs')
+
+const filesDir = './files'
+const pollFilesDir = './files/polls'
 
 const { userRightsTml, userStatusTml } = require('./constants/auth')
 const { cityCategoriesTml } = require('./constants/poll_constants')
