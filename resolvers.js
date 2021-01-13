@@ -555,7 +555,7 @@ module.exports = {
   },
   Result: {
     question: async (parent) => {
-      return await Question.findById(parent.question)
+      return await Question.findById(parent.question).sort("order")
     },
     respondent: async (parent) => {
       return await Respondent.findOne({ "_id": parent.respondent })
