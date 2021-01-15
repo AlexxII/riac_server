@@ -325,7 +325,7 @@ module.exports = {
       // добавление шапки в конфиг файл
       text += '[header]'
       text += `${newLineChar}`
-      text += "АО 1508117"
+      text += '"АО 1508117'
       text += `${newLineChar}`
       text += "==/ОПРОС"
       text += `${newLineChar}`
@@ -335,7 +335,7 @@ module.exports = {
       text += `${newLineChar}`
       text += "UN/{int}"
       text += `${newLineChar}`
-      text += "04/{city}"
+      text += '04/{city}"'
       const t = +new Date
       const logicFile = `/files/polls/pollconfig_${t}.ini`
       fs.writeFileSync(`.${logicFile}`, text)
