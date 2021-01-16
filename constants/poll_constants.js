@@ -7,4 +7,11 @@ const cityCategoriesTml = [
   'сельский населённый пункт'
 ]
 
-module.exports = { cityCategoriesTml };
+const agecategories = [
+  '18-29 лет',
+  '30-49 лет',
+  '50-59 лет',
+  '60 лет и старше'
+]
+
+module.exports = { cityCategoriesTml, agecategories };

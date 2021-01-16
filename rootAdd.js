@@ -6,12 +6,13 @@ const filesDir = './files'
 const pollFilesDir = './files/polls'
 
 const { userRightsTml, userStatusTml } = require('./constants/auth')
-const { cityCategoriesTml } = require('./constants/poll_constants')
+const { cityCategoriesTml, agecategories } = require('./constants/poll_constants')
 
 const User = require('./models/common/user')
 const Rights = require('./models/common/rights')
 const UserStatus = require('./models/common/userStatus')
 const CityCategory = require('./models/common/citycategory')
+const AgeCategory = require('./models/polls/agecategory')
 
 mongoose.connect('mongodb://localhost:27017/poll', { useNewUrlParser: true });
 const dbConnection = mongoose.connection
@@ -95,6 +96,27 @@ for (let i = 0; i < cityCategoriesTml.length; i++) {
     }, () => {
       // ноебходимо отсоединится от БД
       if (i === cityCategoriesTml.length - 1) {
+        mongoose.disconnect();                                                                      // отключение от базы данных
+      }
+    })
+  } catch (e) {
+    console.log('Ошибка при создании БД - категории населенных пунктов', e);
+    mongoose.disconnect();                                                                          // отключение от базы данных
+  }
+}
+
+// добавление категории возраста респондентов
+for (let i = 0; i < agecategories.length; i++) {
+  try {
+    AgeCategory.create({
+      _id: uuidv4(),
+      title: agecategories[i],
+      order: i,
+      default: true,
+      active: true
+    }, () => {
+      // ноебходимо отсоединится от БД
+      if (i === agecategories.length - 1) {
         mongoose.disconnect();                                                                      // отключение от базы данных
       }
     })

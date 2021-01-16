@@ -127,9 +127,12 @@ const typeDefs = gql`
     title: String
   }
 
-  type Age {
-    value: String,
-    title: String
+  type AgeCategory {
+    id: String!,
+    title: String!,
+    order: Int,
+    default: Boolean,
+    active: Boolean
   }
 
   type Query {
@@ -155,7 +158,7 @@ const typeDefs = gql`
     intervievers: [User],
     status: [Status],
     sex: [Sex],
-    age: [Age],
+    ageCategories: [AgeCategory],
 
     question(id: ID!): Question,
     logicById(id:ID!): Logic,
@@ -177,6 +180,10 @@ const typeDefs = gql`
     newCities(cities: [CityInput]): [City],
     cityEdit(id: String!, type: String, title: String!, population: Int!, category: String!): City!,
     deleteCity(id: String!): City,
+
+    saveNewCategory(title: String!): CityCategory!,
+    changeCategoryStatus(id: String!, status: Boolean): AgeCategory!,
+    deleteCityCategory(id: String!): CityCategory
 
     setPollCity(id: ID!, cities: [String]): Poll,
     deleteCityFromActive(id: ID!, cities: [String]): Poll,

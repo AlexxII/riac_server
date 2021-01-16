@@ -11,6 +11,7 @@ const Topic = require('./models/polls/topic')
 const Logic = require('./models/polls/logic')
 const City = require('./models/common/city');
 const CityCategory = require('./models/common/citycategory')
+const AgeCategory = require('./models/polls/agecategory')
 const User = require('./models/common/user');
 const UserStatus = require('./models/common/userStatus');
 const UserRights = require('./models/common/rights');
@@ -71,26 +72,7 @@ module.exports = {
         }
       ]
     },
-    age: () => {
-      return [
-        {
-          value: '0',
-          title: '18-29 лет'
-        },
-        {
-          value: '1',
-          title: '30-49 лет'
-        },
-        {
-          value: '2',
-          title: '50-59 лет'
-        },
-        {
-          value: '3',
-          title: '60 лет и старше'
-        }
-      ]
-    },
+    ageCategories: async () => await AgeCategory.find({}).sort('order'),
     cityCategories: async () => await CityCategory.find({}).sort('order'),
     pollCities: (_, args) => {
       return City.find({})
@@ -248,6 +230,34 @@ module.exports = {
       const city = await City.findOne({ _id: args.id })
       const res = await city.deleteOne()
       return res
+    },
+    saveNewCategory: async (_, args) => {
+      const allCategories = await CityCategory.find({}).sort('order')
+      const maxOrder = allCategories[allCategories.length - 1].order
+      const category = {
+        _id: uuidv4(),
+        title: args.title,
+        order: maxOrder + 1,
+        default: false,
+        active: true
+      }
+      const res = await CityCategory.create(category)
+      return res
+    },
+    deleteCityCategory: async (_, args) => {
+      const city = await CityCategory.findOne({ _id: args.id })
+      const res = await city.deleteOne()
+      return res
+    },
+    changeCategoryStatus: async (_, args) => {
+      const filter = { _id: args.id }
+      const update = {
+        active: args.status
+      }
+      const category = await CityCategory.findOneAndUpdate(filter, update, {
+        new: true
+      })
+      return category
     },
     addPoll: async (_, args) => {
       const questions = args.questions
