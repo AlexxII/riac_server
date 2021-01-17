@@ -244,6 +244,19 @@ module.exports = {
       const res = await CityCategory.create(category)
       return res
     },
+    updateCityCategory: async (_, args) => {
+      const filter = { _id: args.id }
+      const update = {
+        ...args
+      }
+      let category = await CityCategory.findOneAndUpdate(filter, update, {
+        new: true
+      })
+      return category
+    },
+    saveCityCategoryOrder: async (_, args) => {
+
+    },
     deleteCityCategory: async (_, args) => {
       const city = await CityCategory.findOne({ _id: args.id })
       const res = await city.deleteOne()
@@ -422,8 +435,6 @@ module.exports = {
       return await Question.findByIdAndUpdate({ "_id": questionId }, { "limit": limit }, { new: true })
     },
     newOrder: async (_, args) => {
-      let ll = ''
-      ll.filter()
       const questions = args.neworder
       const qLength = questions.length
       let answer = true

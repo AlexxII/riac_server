@@ -91,11 +91,6 @@ const typeDefs = gql`
     active: Boolean
   }
 
-  input ReorderedArray {
-    id: ID!,
-    order: Int!
-  }
-
   type Respondent {
     id: String!,
     poll: Poll!,
@@ -182,8 +177,10 @@ const typeDefs = gql`
     deleteCity(id: String!): City,
 
     saveNewCategory(title: String!): CityCategory!,
+    updateCityCategory(id: String!, title: String!): CityCategory!,
     changeCategoryStatus(id: String!, status: Boolean): AgeCategory!,
-    deleteCityCategory(id: String!): CityCategory
+    deleteCityCategory(id: String!): CityCategory,
+    saveCityCategoryOrder(categories: [CityReorder]): [CityCategory],
 
     setPollCity(id: ID!, cities: [String]): Poll,
     deleteCityFromActive(id: ID!, cities: [String]): Poll,
@@ -199,6 +196,16 @@ const typeDefs = gql`
 
     saveResult(poll: String!, city: String!, user: String!, pool: [String], data: [ResultData]): Boolean,
     deleteResults(results: [String]): [Respondent]
+  }
+
+  input ReorderedArray {
+    id: ID!,
+    order: Int!
+  }
+
+  input CityReorder {
+    id: String!,
+    order: Int!
   }
 
   input UserDataCreate {
