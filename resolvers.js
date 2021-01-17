@@ -255,7 +255,17 @@ module.exports = {
       return category
     },
     saveCityCategoryOrder: async (_, args) => {
-
+      const categories = args.categories
+      const cLength = categories.length
+      let result = []
+      for (let i = 0; i < cLength; i++) {
+        const cId = categories[i].id
+        const category = await CityCategory.findOne({ '_id': cId })
+        category.order = categories[i].order
+        await category.save()
+        result.push(category)
+      }
+      return await result
     },
     deleteCityCategory: async (_, args) => {
       const city = await CityCategory.findOne({ _id: args.id })
