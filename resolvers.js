@@ -17,6 +17,7 @@ const UserStatus = require('./models/common/userStatus');
 const UserRights = require('./models/common/rights');
 const Respondent = require('./models/polls/respondent');
 const Result = require('./models/polls/result')
+const CustomFilter = require('./models/polls/customfilter')
 
 const { GraphQLScalarType } = require('graphql');
 const moment = require('moment');
@@ -88,6 +89,7 @@ module.exports = {
       const res = await Respondent.find({ "poll": args.id }).exec()
       return res
     },
+    customFilters: async () => await CustomFilter.find({}).sort('order'),
     pollResults: async (_, args) => {
       return await Respondent.find({ "poll": args.id }).exec()
       // let res = await Respondent.find({ "poll": args.id }).exec()
@@ -231,9 +233,12 @@ module.exports = {
       const res = await city.deleteOne()
       return res
     },
-    saveNewCategory: async (_, args) => {
+    saveNewCityCategory: async (_, args) => {
       const allCategories = await CityCategory.find({}).sort('order')
-      const maxOrder = allCategories[allCategories.length - 1].order
+      let maxOrder = 0
+      if (allCategories.length) {
+        maxOrder = allCategories[allCategories.length - 1].order
+      }
       const category = {
         _id: uuidv4(),
         title: args.title,
@@ -272,7 +277,7 @@ module.exports = {
       const res = await city.deleteOne()
       return res
     },
-    changeCategoryStatus: async (_, args) => {
+    changeCityCategoryStatus: async (_, args) => {
       const filter = { _id: args.id }
       const update = {
         active: args.status
@@ -281,6 +286,115 @@ module.exports = {
         new: true
       })
       return category
+    },
+    saveNewAgeCategory: async (_, args) => {
+      const allCategories = await AgeCategory.find({}).sort('order')
+      let maxOrder = 0
+      if (allCategories.length) {
+        maxOrder = allCategories[allCategories.length - 1].order
+      }
+      const category = {
+        _id: uuidv4(),
+        title: args.title,
+        order: maxOrder + 1,
+        default: false,
+        active: true
+      }
+      const res = await AgeCategory.create(category)
+      return res
+    },
+    updateAgeCategory: async (_, args) => {
+      const filter = { _id: args.id }
+      const update = {
+        ...args
+      }
+      let category = await AgeCategory.findOneAndUpdate(filter, update, {
+        new: true
+      })
+      return category
+    },
+    deleteAgeCategory: async (_, args) => {
+      const age = await AgeCategory.findOne({ _id: args.id })
+      const res = await age.deleteOne()
+      return res
+    },
+    changeAgeCategoryStatus: async (_, args) => {
+      const filter = { _id: args.id }
+      const update = {
+        active: args.status
+      }
+      const category = await AgeCategory.findOneAndUpdate(filter, update, {
+        new: true
+      })
+      return category
+    },
+    saveAgeCategoryOrder: async (_, args) => {
+      const ages = args.ages
+      const cLength = ages.length
+      let result = []
+      for (let i = 0; i < cLength; i++) {
+        const cId = ages[i].id
+        const category = await AgeCategory.findOne({ '_id': cId })
+        category.order = ages[i].order
+        await category.save()
+        result.push(category)
+      }
+      return await result
+    },
+    // фильтрация 
+    saveNewFilter: async (_, args) => {
+      const allFilters = await CustomFilter.find({}).sort('order')
+      let maxOrder = 0
+      if (allFilters.length) {
+        maxOrder = allFilters[allFilters.length - 1].order
+      }
+      const filter = {
+        _id: uuidv4(),
+        title: args.title,
+        order: maxOrder + 1,
+        default: false,
+        active: true
+      }
+      const res = await CustomFilter.create(filter)
+      return res
+    },
+    updateCustomFilter: async (_, args) => {
+      const filter = { _id: args.id }
+      const update = {
+        ...args
+      }
+      let cusomFilter = await CustomFilter.findOneAndUpdate(filter, update, {
+        new: true
+      })
+      return cusomFilter
+    },
+    changeCustomFilterStatus: async (_, args) => {
+      const filter = { _id: args.id }
+      const update = {
+        active: args.status
+      }
+      const cusomFilter = await CustomFilter.findOneAndUpdate(filter, update, {
+        new: true
+      })
+      return cusomFilter
+    },
+    deleteCustomFilter: async (_, args) => {
+      const custom = await CustomFilter.findOne({ _id: args.id })
+      const res = await custom.deleteOne()
+      return res
+    },
+    saveCustomFilterOrder: async (_, args) => {
+      const filters = args.filters
+      const cLength = filters.length
+      let result = []
+      for (let i = 0; i < cLength; i++) {
+        const cId = filters[i].id
+        const customFilter = await CustomFilter.findOne({ '_id': cId })
+        customFilter.order = filters[i].order
+        await customFilter.save()
+        result.push(customFilter)
+      }
+      return await result
     },
     addPoll: async (_, args) => {
       const questions = args.questions

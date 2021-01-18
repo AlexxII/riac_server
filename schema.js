@@ -130,6 +130,14 @@ const typeDefs = gql`
     active: Boolean
   }
 
+  type CustomFilter {
+    id: String!,
+    title: String!,
+    order: Int,
+    default: Boolean,
+    active: Boolean
+  }
+
   type Query {
     users: [User],
     userRights: [UserRights],
@@ -148,6 +156,7 @@ const typeDefs = gql`
     cities: [City],
     city(id: ID!): City,
     cityCategories: [CityCategory],
+    cityCategoriesAll: [CityCategory],
     pollCities(id: String!): [City]
 
     intervievers: [User],
@@ -160,7 +169,8 @@ const typeDefs = gql`
     pollLogic(id:ID!): Logic,
 
     result(id:ID!): [Respondent],
-    pollResults(id:String!): [Respondent]
+    pollResults(id:String!): [Respondent],
+    customFilters: [CustomFilter]
   }
 
   type Mutation {
@@ -176,11 +186,23 @@ const typeDefs = gql`
     cityEdit(id: String!, type: String, title: String!, population: Int!, category: String!): City!,
     deleteCity(id: String!): City,
 
-    saveNewCategory(title: String!): CityCategory!,
+    saveNewCityCategory(title: String!): CityCategory!,
     updateCityCategory(id: String!, title: String!): CityCategory!,
-    changeCategoryStatus(id: String!, status: Boolean): AgeCategory!,
+    changeCityCategoryStatus(id: String!, status: Boolean): AgeCategory!,
     deleteCityCategory(id: String!): CityCategory,
-    saveCityCategoryOrder(categories: [CityReorder]): [CityCategory],
+    saveCityCategoryOrder(categories: [ItemsReorder]): [CityCategory],
+
+    saveNewAgeCategory(title: String!): AgeCategory!,
+    updateAgeCategory(id: String!, title: String!): AgeCategory!,
+    changeAgeCategoryStatus(id: String!, status: Boolean): AgeCategory!,
+    deleteAgeCategory(id: String!): AgeCategory!,
+    saveAgeCategoryOrder(ages: [ItemsReorder]): [AgeCategory],
+
+    saveNewFilter(title: String!): CustomFilter!,
+    updateCustomFilter(id: String!, title: String!): CustomFilter!,
+    changeCustomFilterStatus(id: String!, status: Boolean): CustomFilter!,
+    deleteCustomFilter(id: String!): CustomFilter!,
+    saveCustomFilterOrder(filters: [ItemsReorder]): [CustomFilter],
 
     setPollCity(id: ID!, cities: [String]): Poll,
     deleteCityFromActive(id: ID!, cities: [String]): Poll,
@@ -203,7 +225,7 @@ const typeDefs = gql`
     order: Int!
   }
 
-  input CityReorder {
+  input ItemsReorder {
     id: String!,
     order: Int!
   }
