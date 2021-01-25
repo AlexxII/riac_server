@@ -1,7 +1,6 @@
 const { AuthenticationError } = require('apollo-server-express')
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs')
-const ini = require('ini')
 
 const Poll = require('./models/polls/poll')
 const Question = require('./models/polls/question')
