@@ -84,8 +84,8 @@ module.exports = {
       return res
     },
     topics: async () => await Topic.find({}),
-    result: async (_, args) => {
-      const res = await Respondent.find({ "poll": args.id }).exec()
+    respondent: async (_, args) => {
+      const res = await Respondent.findOne({ "_id": args.id }).exec()
       return res
     },
     customFilters: async () => await CustomFilter.find({}).sort('order'),
@@ -684,6 +684,11 @@ module.exports = {
     topic: async (parent) => {
       const rr = await Topic.findOne({ "_id": parent.topic })
       return rr
+    },
+    codesPool: async (parent) => {
+      const answers = await Answer.find({ "_id": { $in: parent.answers } }).sort('order')
+      const codePool = answers.map(answer => answer.code)
+      return codePool
     }
   },
   Answer: {
@@ -717,6 +722,10 @@ module.exports = {
     },
     respondent: async (parent) => {
       return await Respondent.findOne({ "_id": parent.respondent })
+    },
+    answer: async (parent) => {
+      // return await Answer.findOne({ "_id": parent.answer })
+      return await Answer.findById(parent.answer)
     }
   },
   City: {
