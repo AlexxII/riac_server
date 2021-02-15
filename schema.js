@@ -40,7 +40,8 @@ const typeDefs = gql`
     order: Int,
     parentPool: ID!,
     topic: Topic,
-    answers: [Answer]
+    answers: [Answer],
+    codesPool: [String]
   }
 
   type Answer {
@@ -107,7 +108,7 @@ const typeDefs = gql`
     id: String!,
     respondent: Respondent!,
     question: Question!,
-    answer: String!,
+    answer: Answer!,
     code: String!,
     text: String
   }
@@ -168,8 +169,8 @@ const typeDefs = gql`
     logicById(id:ID!): Logic,
     pollLogic(id:ID!): Logic,
 
-    result(id:ID!): [Respondent],
     pollResults(id:String!): [Respondent],
+    respondent(id:String): Respondent,
     customFilters: [CustomFilter]
   }
 
