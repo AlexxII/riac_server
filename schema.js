@@ -218,6 +218,7 @@ const typeDefs = gql`
     saveConfig(path: String!, text: String!): Boolean,
 
     saveResult(poll: String!, city: String!, user: String!, pool: [String], data: [ResultData]): Boolean,
+    updateResult(id: String!, data: [ResultData]): Boolean,
     deleteResults(results: [String]): [Respondent]
   }
 

@@ -614,6 +614,36 @@ module.exports = {
         return false
       }
     },
+    updateResult: async (_, args) => {
+      const questions = args.data
+      const respondentId = args.id
+      const resultPool = []
+      for (let i = 0; i < questions.length; i++) {
+        const questionId = questions[i].id
+        const answers = questions[i].data
+        for (let j = 0; j < answers.length; j++) {
+          const result = {
+            _id: uuidv4(),
+            respondent: respondentId,
+            question: questionId,
+            answer: answers[j].answer,
+            code: answers[j].code,
+            text: answers[j].text
+          }
+          Result.create(result)
+          resultPool.push(result._id)
+        }
+      }
+      let respondent = await Respondent.findOne({ "_id": respondentId })
+      respondent.data = resultPool,
+      respondent.lastModified = new Date()
+      const res = await respondent.save()
+      if (res) {
+        return true
+      } else {
+        return false
+      }
+    },
     deleteResults: async (_, args) => {
       const respondents = args.results
       const returnResult = []
