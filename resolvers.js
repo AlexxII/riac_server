@@ -636,7 +636,7 @@ module.exports = {
       }
       let respondent = await Respondent.findOne({ "_id": respondentId })
       respondent.data = resultPool,
-      respondent.lastModified = new Date()
+        respondent.lastModified = new Date()
       const res = await respondent.save()
       if (res) {
         return true
@@ -686,7 +686,6 @@ module.exports = {
       const reg = /\D{3}/
       return parent.code.match(reg)[0]
     },
-    complete: () => 0,
     questionsCount: (parent) => {
       return parent.questions.length
     },
@@ -705,6 +704,9 @@ module.exports = {
     },
     endDate: (parent) => {
       return moment(parent.endDate).format('DD.MM.YYYY')
+    },
+    resultsCount: async (parent) => {
+      return await Respondent.find({ "poll": parent.id }).count()
     }
   },
   Question: {
