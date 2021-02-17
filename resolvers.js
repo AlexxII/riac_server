@@ -48,18 +48,6 @@ module.exports = {
     intervievers: async () => {
       return await User.find({})
     },
-    status: () => {
-      return [
-        {
-          value: '0',
-          title: 'Не обработано'
-        },
-        {
-          value: '1',
-          title: 'Обработано'
-        }
-      ]
-    },
     sex: () => {
       return [
         {

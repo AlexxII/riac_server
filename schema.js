@@ -114,11 +114,6 @@ const typeDefs = gql`
     text: String
   }
 
-  type Status {
-    value: String,
-    title: String
-  }
-
   type Sex {
     value: String,
     title: String
@@ -162,7 +157,6 @@ const typeDefs = gql`
     pollCities(id: String!): [City]
 
     intervievers: [User],
-    status: [Status],
     sex: [Sex],
     ageCategories: [AgeCategory],
 
