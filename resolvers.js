@@ -22,6 +22,19 @@ const { GraphQLScalarType } = require('graphql');
 const moment = require('moment');
 const { findOne } = require('./models/polls/poll');
 
+const sex = [
+  {
+    id: 'fccd212d-dbfa-4c3c-aa4a-e876e8ce18d9',
+    title: 'мужской',
+    order: 1
+  },
+  {
+    id: '5be3a15b-a9a0-4d91-ac29-ae7ce4c15f8c',
+    title: 'женский',
+    order: 2
+  }
+]
+
 module.exports = {
   Query: {
     users: async () => await User.find({ default: { $ne: true } }).select('id username login status rights').sort('order'),
@@ -49,16 +62,7 @@ module.exports = {
       return await User.find({ default: { $ne: true } })
     },
     sex: () => {
-      return [
-        {
-          value: '0',
-          title: 'мужской'
-        },
-        {
-          value: '1',
-          title: 'женский'
-        }
-      ]
+      return sex
     },
     ageCategoriesAll: async () => await AgeCategory.find({}).sort('order'),
     ageCategories: async () => await AgeCategory.find({ active: { $ne: false } }).sort('order'),
@@ -688,6 +692,9 @@ module.exports = {
     color: () => 'red',
     logic: async (parent) => {
       return await Logic.findOne({ "poll": parent._id })
+    },
+    filters: async (parent) => {
+      return await parent.filters ? parent.filters : null
     },
     startDate: parent => {
       return moment(parent.startDate).format('DD.MM.YYYY')

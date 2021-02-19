@@ -26,6 +26,7 @@ const typeDefs = gql`
     resultsCount: Int,
     files: [PollFile],
     logic: Logic,
+    filters: Filters,
     active: Boolean!,
     created: String!,                                  "// DATE"
     lastModified: String!,                             "// DATE"
@@ -68,6 +69,16 @@ const typeDefs = gql`
   type Topic {
     id: String!,
     title: String!
+  }
+
+  type Filters {
+    age: [FilterType],
+    sex: [FilterType],
+    custom: [FilterType]
+  }
+
+  type FilterType {
+    id: String
   }
 
   type Logic {
@@ -115,8 +126,9 @@ const typeDefs = gql`
   }
 
   type Sex {
-    value: String,
-    title: String
+    id: String,
+    title: String,
+    order: Int
   }
 
   type AgeCategory {
@@ -160,7 +172,6 @@ const typeDefs = gql`
     sex: [Sex],
     ageCategories: [AgeCategory],
     ageCategoriesAll: [AgeCategory],
-
     question(id: ID!): Question,
     logicById(id:ID!): Logic,
     pollLogic(id:ID!): Logic,
