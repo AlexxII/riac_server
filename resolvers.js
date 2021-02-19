@@ -46,7 +46,7 @@ module.exports = {
       return await City.find({})
     },
     intervievers: async () => {
-      return await User.find({})
+      return await User.find({ default: { $ne: true } })
     },
     sex: () => {
       return [
@@ -60,8 +60,10 @@ module.exports = {
         }
       ]
     },
-    ageCategories: async () => await AgeCategory.find({}).sort('order'),
-    cityCategories: async () => await CityCategory.find({}).sort('order'),
+    ageCategoriesAll: async () => await AgeCategory.find({}).sort('order'),
+    ageCategories: async () => await AgeCategory.find({ active: { $ne: false } }).sort('order'),
+    cityCategoriesAll: async () => await CityCategory.find({}).sort('order'),
+    cityCategories: async () => await CityCategory.find({ active: { $ne: false } }).sort('order'),
     pollCities: (_, args) => {
       return City.find({})
     },

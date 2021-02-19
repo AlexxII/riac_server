@@ -159,6 +159,7 @@ const typeDefs = gql`
     intervievers: [User],
     sex: [Sex],
     ageCategories: [AgeCategory],
+    ageCategoriesAll: [AgeCategory],
 
     question(id: ID!): Question,
     logicById(id:ID!): Logic,
@@ -184,7 +185,7 @@ const typeDefs = gql`
 
     saveNewCityCategory(title: String!): CityCategory!,
     updateCityCategory(id: String!, title: String!): CityCategory!,
-    changeCityCategoryStatus(id: String!, status: Boolean): AgeCategory!,
+    changeCityCategoryStatus(id: String!, status: Boolean): CityCategory!,
     deleteCityCategory(id: String!): CityCategory,
     saveCityCategoryOrder(categories: [ItemsReorder]): [CityCategory],
 
