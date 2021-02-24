@@ -76,7 +76,8 @@ const typeDefs = gql`
     sex: [FilterType],
     custom: [FilterType]
   }
-
+  
+  "// пара ключ - код"
   type FilterType {
     id: String
   }

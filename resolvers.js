@@ -20,7 +20,6 @@ const CustomFilter = require('./models/polls/customfilter')
 
 const { GraphQLScalarType } = require('graphql');
 const moment = require('moment');
-const { findOne } = require('./models/polls/poll');
 
 const sex = [
   {
