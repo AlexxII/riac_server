@@ -693,7 +693,23 @@ module.exports = {
       return await Logic.findOne({ "poll": parent._id })
     },
     filters: async (parent) => {
-      return await parent.filters ? parent.filters : null
+      return {
+        age: [
+          {
+            id: '085386b5-5a8b-4427-8e62-a48e5c5fc743',
+            code: '120'
+          },
+          {
+            id: '8081c304-a3cb-456a-b135-50131fcc4828',
+            code: '121'
+          }
+        ],
+        sex: [
+          { id: 'fccd212d-dbfa-4c3c-aa4a-e876e8ce18d9', code: '500' }
+        ],
+        custom: null
+      }
+      // return await parent.filters ? parent.filters : null
     },
     startDate: parent => {
       return moment(parent.startDate).format('DD.MM.YYYY')

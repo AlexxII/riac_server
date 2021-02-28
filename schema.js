@@ -79,7 +79,8 @@ const typeDefs = gql`
   
   "// пара ключ - код"
   type FilterType {
-    id: String
+    id: String,
+    code: String
   }
 
   type Logic {
