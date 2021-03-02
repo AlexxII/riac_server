@@ -697,15 +697,21 @@ module.exports = {
         age: [
           {
             id: '085386b5-5a8b-4427-8e62-a48e5c5fc743',
-            code: '120'
+            code: '120',
+            active: true
           },
           {
             id: '8081c304-a3cb-456a-b135-50131fcc4828',
-            code: '121'
+            code: '121',
+            active: true
           }
         ],
         sex: [
-          { id: 'fccd212d-dbfa-4c3c-aa4a-e876e8ce18d9', code: '500' }
+          {
+            id: 'fccd212d-dbfa-4c3c-aa4a-e876e8ce18d9',
+            code: '500',
+            active: true
+          }
         ],
         custom: null
       }
