@@ -389,7 +389,23 @@ module.exports = {
       return await result
     },
     savePollFilters: async (_, args) => {
-      console.log(args.poll);
+      const poll = await Poll.findOne({ '_id': args.poll })
+      const type = args.type
+      console.log(poll);
+      const pollFilters = poll.filters
+      console.log(pollFilters);
+      if (poll.filters !== undefined) {
+        poll.filters = {
+          ...poll.filters,
+          [type]: args.data
+        }
+      } else {
+        poll.filters = {
+          ...poll.filters,
+          [type]: args.data
+        }
+      }
+      await poll.save()
     },
     addPoll: async (_, args) => {
       const questions = args.questions
