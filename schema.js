@@ -209,11 +209,13 @@ const typeDefs = gql`
     deleteAgeCategory(id: String!): AgeCategory!,
     saveAgeCategoryOrder(ages: [ItemsReorder]): [AgeCategory],
 
-    saveNewFilter(title: String!): CustomFilter!,
+    saveNewCustomFilter(title: String!): CustomFilter!,
     updateCustomFilter(id: String!, title: String!): CustomFilter!,
     changeCustomFilterStatus(id: String!, status: Boolean): CustomFilter!,
     deleteCustomFilter(id: String!): CustomFilter!,
     saveCustomFilterOrder(filters: [ItemsReorder]): [CustomFilter],
+
+    savePollFilters(poll: String, type: String, data: [FilterTypeInput]): Filters,
 
     setPollCity(id: ID!, cities: [String]): Poll,
     deleteCityFromActive(id: ID!, cities: [String]): Poll,
@@ -248,6 +250,12 @@ const typeDefs = gql`
     password: String!,
     status: String!,
     rights: String
+  }
+
+  input FilterTypeInput {
+    id: String,
+    code: String,
+    active: Boolean
   }
 
   input UserDataUpdate {

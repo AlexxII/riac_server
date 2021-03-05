@@ -334,7 +334,7 @@ module.exports = {
       return await result
     },
     // фильтрация 
-    saveNewFilter: async (_, args) => {
+    saveNewCustomFilter: async (_, args) => {
       const allFilters = await CustomFilter.find({}).sort('order')
       let maxOrder = 0
       if (allFilters.length) {
@@ -387,6 +387,9 @@ module.exports = {
         result.push(customFilter)
       }
       return await result
+    },
+    savePollFilters: async (_, args) => {
+      console.log(args.poll);
     },
     addPoll: async (_, args) => {
       const questions = args.questions
@@ -693,28 +696,33 @@ module.exports = {
       return await Logic.findOne({ "poll": parent._id })
     },
     filters: async (parent) => {
-      return {
-        age: [
-          {
-            id: '085386b5-5a8b-4427-8e62-a48e5c5fc743',
-            code: '120',
-            active: true
-          },
-          {
-            id: '8081c304-a3cb-456a-b135-50131fcc4828',
-            code: '121',
-            active: true
-          }
-        ],
-        sex: [
-          {
-            id: 'fccd212d-dbfa-4c3c-aa4a-e876e8ce18d9',
-            code: '500',
-            active: true
-          }
-        ],
-        custom: null
-      }
+      return parent.filters
+      //   age: [
+      //     {
+      //       id: '085386b5-5a8b-4427-8e62-a48e5c5fc743',
+      //       code: '120',
+      //       active: true
+      //     },
+      //     {
+      //       id: '8081c304-a3cb-456a-b135-50131fcc4828',
+      //       code: '121',
+      //       active: true
+      //     }
+      //   ],
+      //   sex: [
+      //     {
+      //       id: 'fccd212d-dbfa-4c3c-aa4a-e876e8ce18d9',
+      //       code: '500',
+      //       active: true
+      //     },
+      //     {
+      //       id: '5be3a15b-a9a0-4d91-ac29-ae7ce4c15f8c',
+      //       code: '501',
+      //       active: false
+      //     }
+      //   ],
+      //   custom: null
+      // }
       // return await parent.filters ? parent.filters : null
     },
     startDate: parent => {
