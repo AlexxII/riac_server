@@ -391,21 +391,29 @@ module.exports = {
     savePollFilters: async (_, args) => {
       const poll = await Poll.findOne({ '_id': args.poll })
       const type = args.type
-      console.log(poll);
-      const pollFilters = poll.filters
-      console.log(pollFilters);
       if (poll.filters !== undefined) {
         poll.filters = {
           ...poll.filters,
           [type]: args.data
         }
+        await poll.save()
+        return poll.filters
       } else {
-        poll.filters = {
-          ...poll.filters,
-          [type]: args.data
-        }
+        const col = db.collection("polls");
+        col.findOneAndUpdate({ '_id': args.poll },
+          {
+            $set: {
+              filters: {
+                [type]: args.data
+              }
+            }
+          },
+          function (err, result) {
+            console.log(result);
+            return result
+          }
+        )
       }
-      await poll.save()
     },
     addPoll: async (_, args) => {
       const questions = args.questions
