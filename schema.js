@@ -181,7 +181,8 @@ const typeDefs = gql`
 
     pollResults(id:String!): [Respondent],
     respondent(id:String): Respondent,
-    customFilters: [CustomFilter]
+    customFilters: [CustomFilter],
+    customFiltersAll: [CustomFilter]
   }
 
   type Mutation {
@@ -215,7 +216,7 @@ const typeDefs = gql`
     deleteCustomFilter(id: String!): CustomFilter!,
     saveCustomFilterOrder(filters: [ItemsReorder]): [CustomFilter],
 
-    savePollFilters(poll: String, type: String, data: [FilterTypeInput]): Filters,
+    savePollFilters(poll: String, data: FilterTypeInputEx): Filters,
 
     setPollCity(id: ID!, cities: [String]): Poll,
     deleteCityFromActive(id: ID!, cities: [String]): Poll,
@@ -250,6 +251,12 @@ const typeDefs = gql`
     password: String!,
     status: String!,
     rights: String
+  }
+
+  input FilterTypeInputEx {
+    age: [FilterTypeInput],
+    sex: [FilterTypeInput],
+    custom: [FilterTypeInput]
   }
 
   input FilterTypeInput {

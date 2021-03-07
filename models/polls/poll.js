@@ -24,7 +24,12 @@ const pollSchema = new Schema({
   active: Boolean,
   created: Date,
   lastModified: Date,
-  deleted: Boolean
+  deleted: Boolean,
+  filters: {
+    age: [],
+    sex: [],
+    custom: []
+  }
 })
 
 module.exports = mongoose.model('Polls', pollSchema)

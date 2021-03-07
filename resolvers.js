@@ -81,7 +81,8 @@ module.exports = {
       const res = await Respondent.findOne({ "_id": args.id }).exec()
       return res
     },
-    customFilters: async () => await CustomFilter.find({}).sort('order'),
+    customFiltersAll: async () => await CustomFilter.find({}).sort('order'),
+    customFilters: async () => await CustomFilter.find({ active: { $ne: false } }).sort('order'),
     pollResults: async (_, args) => {
       return await Respondent.find({ "poll": args.id }).exec()
       // let res = await Respondent.find({ "poll": args.id }).exec()
@@ -390,27 +391,21 @@ module.exports = {
     },
     savePollFilters: async (_, args) => {
       const poll = await Poll.findOne({ '_id': args.poll })
-      const type = args.type
+      const data = args.data
       if (poll.filters !== undefined) {
-        poll.filters = {
-          ...poll.filters,
-          [type]: args.data
-        }
+        poll.filters = data
         await poll.save()
         return poll.filters
       } else {
-        const col = db.collection("polls");
-        col.findOneAndUpdate({ '_id': args.poll },
+        Poll.findOneAndUpdate({ '_id': args.poll },
           {
             $set: {
-              filters: {
-                [type]: args.data
-              }
+              filters: data
             }
           },
           function (err, result) {
             console.log(result);
-            return result
+            return result.filters
           }
         )
       }
