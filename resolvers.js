@@ -690,6 +690,8 @@ module.exports = {
           }
           break
         case 'unset':
+          console.log(type);
+          console.log(respondents);
           for (let i = 0; i < lRespondent; i++) {
             const rId = respondents[i]
             const result = await Respondent.findByIdAndUpdate({ "_id": rId }, { "processed": false }, { new: true })
