@@ -675,6 +675,31 @@ module.exports = {
         await respondent.deleteOne()
       }
       return returnResult
+    },
+    saveResultStatus: async (_, args) => {
+      const respondents = args.results
+      const type = args.type
+      const returnResult = []
+      const lRespondent = respondents.length
+      switch (type) {
+        case 'set':
+          for (let i = 0; i < lRespondent; i++) {
+            const rId = respondents[i]
+            const result = await Respondent.findByIdAndUpdate({ "_id": rId }, { "processed": true }, { new: true })
+            returnResult.push(result)
+          }
+          break
+        case 'unset':
+          for (let i = 0; i < lRespondent; i++) {
+            const rId = respondents[i]
+            const result = await Respondent.findByIdAndUpdate({ "_id": rId }, { "processed": false }, { new: true })
+            returnResult.push(result)
+          }
+          break
+        default:
+          break;
+      }
+      return returnResult
     }
   },
   User: {

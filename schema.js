@@ -233,6 +233,7 @@ const typeDefs = gql`
     saveResult(poll: String!, city: String!, user: String!, pool: [String], data: [ResultData]): Boolean,
     updateResult(id: String!, data: [ResultData]): Boolean,
     deleteResults(results: [String]): [Respondent]
+    saveResultStatus(results: [String], type: String): [Respondent]
   }
 
   input ReorderedArray {
