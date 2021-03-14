@@ -181,7 +181,10 @@ module.exports = {
     logout: (_, __, context) => context.logout(),
     newCity: async (_, args) => {
       const allCities = await City.find({}).sort('order')
-      const maxOrder = allCities[allCities.length - 1].order
+      let maxOrder = 0
+      if (allCities.length) {
+        maxOrder = allCities[allCities.length - 1].order
+      }
       const city = {
         ...args,
         _id: uuidv4(),
@@ -469,7 +472,7 @@ module.exports = {
         if (Array.isArray(logic[key])) {
           text += `[${key}]${newLineChar}`
           text += `answers = ${logic[key]}${newLineChar}`
-          text += ` ${newLineChar}`
+          text += `${newLineChar}`
         } else {
           const obj = logic[key]
           let suffix = 1
@@ -478,11 +481,17 @@ module.exports = {
             text += `answers = ${k}${newLineChar}`
             text += `exclude = ${obj[k].restrict}${newLineChar}`
             text += `critical = 1${newLineChar}`
-            text += ` ${newLineChar}`
+            text += `${newLineChar}`
             suffix++
           }
         }
       }
+      // добавление секции cities
+      text += `#секция категорий городов, где указываются соответствующие коды ${newLineChar}`
+      text += `[cities]${newLineChar}`
+      text += `cities = ${newLineChar}`
+      text += `${newLineChar}`
+
       // добавление шапки в конфиг файл
       text += '[header]'
       text += `${newLineChar}`
