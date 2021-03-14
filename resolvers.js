@@ -584,7 +584,6 @@ module.exports = {
     newOrder: async (_, args) => {
       const questions = args.neworder
       const qLength = questions.length
-      let answer = true
       let result = []
       for (let i = 0; i < qLength; i++) {
         const qId = questions[i].id
