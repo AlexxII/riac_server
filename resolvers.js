@@ -84,7 +84,7 @@ module.exports = {
     customFiltersAll: async () => await CustomFilter.find({}).sort('order'),
     customFilters: async () => await CustomFilter.find({ active: { $ne: false } }).sort('order'),
     pollResults: async (_, args) => {
-      return await Respondent.find({ "poll": args.id }).exec()
+      // return await Respondent.find({ "poll": args.id }).exec()
       // let res = await Respondent.find({ "poll": args.id }).exec()
       const poll = args.id;
       // генерация пула городов
@@ -95,7 +95,7 @@ module.exports = {
       const qUsers = await User.find({}).select("_id")
       const users = qUsers.map(user => user.id)
       const usersCount = users.length
-      const mainCount = 0;
+      const mainCount = 1000;
       for (let i = 0; i < mainCount; i++) {
         let data = []
         const rand = randomInteger(12, 18)
@@ -728,6 +728,36 @@ module.exports = {
     },
     results: async (parent) => {
       return await Respondent.find({ "poll": parent._id })
+
+      let res = await Respondent.find({ "poll": parent.id }).exec()
+      const poll = parent.id;
+      // генерация пула городов
+      const qCities = await City.find({}).select("_id")
+      const cities = qCities.map(city => city.id)
+      const citiesCount = cities.length
+      // генерация пула пользователей
+      const qUsers = await User.find({}).select("_id")
+      const users = qUsers.map(user => user.id)
+      const usersCount = users.length
+      const mainCount = 5000;
+      for (let i = 0; i < mainCount; i++) {
+        let data = []
+        const rand = randomInteger(12, 18)
+        for (let j = 0; j < rand; j++) {
+          data.push(uuidv4())
+        }
+        res.push({
+          data,
+          id: uuidv4(),
+          poll,
+          user: users[randomInteger(0, usersCount - 1)],
+          city: cities[randomInteger(0, citiesCount - 1)],
+          _v: 0
+        })
+      }
+      return res
+
+
     },
     files: async (parent) => {
       return await PollFile.find({ "_id": { $in: parent.files } })
@@ -751,33 +781,6 @@ module.exports = {
     },
     filters: async (parent) => {
       return parent.filters
-      //   age: [
-      //     {
-      //       id: '085386b5-5a8b-4427-8e62-a48e5c5fc743',
-      //       code: '120',
-      //       active: true
-      //     },
-      //     {
-      //       id: '8081c304-a3cb-456a-b135-50131fcc4828',
-      //       code: '121',
-      //       active: true
-      //     }
-      //   ],
-      //   sex: [
-      //     {
-      //       id: 'fccd212d-dbfa-4c3c-aa4a-e876e8ce18d9',
-      //       code: '500',
-      //       active: true
-      //     },
-      //     {
-      //       id: '5be3a15b-a9a0-4d91-ac29-ae7ce4c15f8c',
-      //       code: '501',
-      //       active: false
-      //     }
-      //   ],
-      //   custom: null
-      // }
-      // return await parent.filters ? parent.filters : null
     },
     startDate: parent => {
       return moment(parent.startDate).format('DD.MM.YYYY')
