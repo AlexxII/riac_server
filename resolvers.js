@@ -600,6 +600,41 @@ module.exports = {
       fs.writeFileSync(`.${filePath}`, text)
       return true
     },
+    saveBatchResults: async (_, args) => {
+      const results = args.results
+      // сохраняем респондентов
+      const pollId = args.poll
+      const lResults = results.length
+      for (let i = 0; i < lResults; i++) {
+        const respondentId = uuidv4()
+        const answers = results[i].result
+        const lAnswers = answers.length
+        let resultPool = []
+        for (j = 0; j < lAnswers; j++) {
+          const result = {
+            _id: uuidv4(),
+            respondent: respondentId,
+            question: answers[j].question,
+            answer: answers[j].answer,
+            code: answers[j].code,
+            text: answers[j].text
+          }
+          const r = await Result.create(result)
+          resultPool.push(r._id)
+        }
+        const resp = {
+          _id: respondentId,
+          poll: pollId,
+          city: '7465f940-d9fc-4e68-9b93-c0ec73c3b4a0',
+          user: '746f09fe-b39d-4c3a-907d-b9cf300a154a',
+          created: new Date(),
+          lastModified: new Date(),
+          processed: false,
+          data: resultPool
+        }
+        const res = await Respondent.create(resp)
+      }
+    },
     saveResult: async (_, args) => {
       const questions = args.data
       let resultPool = []

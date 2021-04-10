@@ -230,10 +230,12 @@ const typeDefs = gql`
 
     saveConfig(path: String!, text: String!): Boolean,
 
-    saveResult(poll: String!, city: String!, user: String!, pool: [String], data: [ResultData]): Boolean,
+    saveResult(poll: String!, city: String!, user: String!, data: [ResultData]): Boolean,
     updateResult(id: String!, data: [ResultData]): Boolean,
     deleteResults(results: [String]): [Respondent]
     saveResultStatus(results: [String], type: String): [Respondent]
+
+    saveBatchResults(poll: String!, results: [BatchResults]): Boolean
   }
 
   input ReorderedArray {
@@ -278,12 +280,27 @@ const typeDefs = gql`
     data: [resultInput]
   }
 
+  
   input resultInput {
     answer: String!,
     code: String!,
     text: String
   }
 
+  input BatchResults {
+    city: String,
+    date: String,
+    user: String,
+    result: [resultInputEx]
+  }
+
+  input resultInputEx {
+    question: String!,
+    answer: String!,
+    code: String!,
+    text: String
+  }
+  
   input PollWithConfig {
     title: String!,
     shortTitle: String,
