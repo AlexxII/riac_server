@@ -666,11 +666,7 @@ module.exports = {
         data: resultPool
       }
       const res = await Respondent.create(resp)
-      if (res) {
-        return true
-      } else {
-        return false
-      }
+      return res
     },
     updateResult: async (_, args) => {
       const questions = args.data
@@ -693,14 +689,18 @@ module.exports = {
         }
       }
       let respondent = await Respondent.findOne({ "_id": respondentId })
-      respondent.data = resultPool,
-        respondent.lastModified = new Date()
+      respondent.data = resultPool
+      respondent.lastModified = new Date()
       const res = await respondent.save()
-      if (res) {
-        return true
-      } else {
-        return false
-      }
+      return res
+    },
+    updateResultCity: async (_, args) => {
+      const respondents = args.results
+      const city = args.city
+    },
+    updateResultUser: async (_, args) => {
+      const respondents = args.results
+      const user = args.user
     },
     deleteResults: async (_, args) => {
       const respondents = args.results

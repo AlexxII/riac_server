@@ -230,10 +230,13 @@ const typeDefs = gql`
 
     saveConfig(path: String!, text: String!): Boolean,
 
-    saveResult(poll: String!, city: String!, user: String!, data: [ResultData]): Boolean,
-    updateResult(id: String!, data: [ResultData]): Boolean,
+    saveResult(poll: String!, city: String!, user: String!, data: [ResultData]): Respondent,
+    updateResult(id: String!, data: [ResultData]): Respondent,
     deleteResults(results: [String]): [Respondent]
     saveResultStatus(results: [String], type: String): [Respondent]
+
+    updateResultCity(results: [String], city: String): Respondent,
+    updateResultUser(results: [String], user: String): Respondent,
 
     saveBatchResults(poll: String!, results: [BatchResults]): Boolean
   }
