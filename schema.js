@@ -235,8 +235,8 @@ const typeDefs = gql`
     deleteResults(results: [String]): [Respondent]
     saveResultStatus(results: [String], type: String): [Respondent]
 
-    updateResultCity(results: [String], city: String): Respondent,
-    updateResultUser(results: [String], user: String): Respondent,
+    updateResultCity(results: [String], city: String): [Respondent],
+    updateResultUser(results: [String], user: String): [Respondent],
 
     saveBatchResults(poll: String!, results: [BatchResults]): Boolean
   }

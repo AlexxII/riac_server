@@ -697,17 +697,31 @@ module.exports = {
     updateResultCity: async (_, args) => {
       const respondents = args.results
       const city = args.city
+      const returnResult = []
+      for (let i = 0; i < respondents.length; i++) {
+        const resondentId = respondents[i];
+        const result = await Respondent.findByIdAndUpdate({ "_id": resondentId }, { "city": city }, { new: true })
+        returnResult.push(result)
+      }
+      return returnResult
     },
     updateResultUser: async (_, args) => {
       const respondents = args.results
       const user = args.user
+      const returnResult = []
+      for (let i = 0; i < respondents.length; i++) {
+        const resondentId = respondents[i];
+        const result = await Respondent.findByIdAndUpdate({ "_id": resondentId }, { "user": user }, { new: true })
+        returnResult.push(result)
+      }
+      return returnResult
     },
     deleteResults: async (_, args) => {
       const respondents = args.results
       const returnResult = []
       for (let i = 0; i < respondents.length; i++) {
-        const rID = respondents[i]
-        const respondent = await Respondent.findOne({ "_id": rID })
+        const resondentId = respondents[i]
+        const respondent = await Respondent.findOne({ "_id": resondentId })
         const results = respondent.data
         const rLength = results.length
         for (let i = 0; i < rLength; i++) {
@@ -733,8 +747,6 @@ module.exports = {
           }
           break
         case 'unset':
-          console.log(type);
-          console.log(respondents);
           for (let i = 0; i < lRespondent; i++) {
             const rId = respondents[i]
             const result = await Respondent.findByIdAndUpdate({ "_id": rId }, { "processed": false }, { new: true })
