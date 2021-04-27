@@ -610,6 +610,9 @@ module.exports = {
         const answers = results[i].result
         const lAnswers = answers.length
         let resultPool = []
+        const city = results[i].city
+        const user = results[i].user
+        const date = results[i].date
         for (j = 0; j < lAnswers; j++) {
           const result = {
             _id: uuidv4(),
@@ -625,10 +628,10 @@ module.exports = {
         const resp = {
           _id: respondentId,
           poll: pollId,
-          city: '7465f940-d9fc-4e68-9b93-c0ec73c3b4a0',
-          user: '746f09fe-b39d-4c3a-907d-b9cf300a154a',
-          created: new Date(),
-          lastModified: new Date(),
+          city: city,
+          user: user,
+          created: date,
+          lastModified: date,
           processed: false,
           data: resultPool
         }
