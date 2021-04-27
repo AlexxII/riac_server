@@ -179,7 +179,7 @@ const typeDefs = gql`
     logicById(id:ID!): Logic,
     pollLogic(id:ID!): Logic,
 
-    pollResults(id:String!): [Respondent],
+    ## pollResults(id:String!): [Respondent],
     respondent(id:String): Respondent,
     customFilters: [CustomFilter],
     customFiltersAll: [CustomFilter]
@@ -238,7 +238,7 @@ const typeDefs = gql`
     updateResultCity(results: [String], city: String): [Respondent],
     updateResultUser(results: [String], user: String): [Respondent],
 
-    saveBatchResults(poll: String!, results: [BatchResults]): Boolean
+    saveBatchResults(poll: String!, results: [BatchResults]): [Respondent]
   }
 
   input ReorderedArray {

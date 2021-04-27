@@ -83,36 +83,37 @@ module.exports = {
     },
     customFiltersAll: async () => await CustomFilter.find({}).sort('order'),
     customFilters: async () => await CustomFilter.find({ active: { $ne: false } }).sort('order'),
-    pollResults: async (_, args) => {
-      // return await Respondent.find({ "poll": args.id }).exec()
-      // let res = await Respondent.find({ "poll": args.id }).exec()
-      const poll = args.id;
-      // генерация пула городов
-      const qCities = await City.find({}).select("_id")
-      const cities = qCities.map(city => city.id)
-      const citiesCount = cities.length
-      // генерация пула пользователей
-      const qUsers = await User.find({}).select("_id")
-      const users = qUsers.map(user => user.id)
-      const usersCount = users.length
-      const mainCount = 1000;
-      for (let i = 0; i < mainCount; i++) {
-        let data = []
-        const rand = randomInteger(12, 18)
-        for (let j = 0; j < rand; j++) {
-          data.push(uuidv4())
-        }
-        res.push({
-          data,
-          id: uuidv4(),
-          poll,
-          user: users[randomInteger(0, usersCount - 1)],
-          city: cities[randomInteger(0, citiesCount - 1)],
-          _v: 0
-        })
-      }
-      return res
-    }
+
+    // pollResults: async (_, args) => {
+    //   // return await Respondent.find({ "poll": args.id }).exec()
+    //   // let res = await Respondent.find({ "poll": args.id }).exec()
+    //   const poll = args.id;
+    //   // генерация пула городов
+    //   const qCities = await City.find({}).select("_id")
+    //   const cities = qCities.map(city => city.id)
+    //   const citiesCount = cities.length
+    //   // генерация пула пользователей
+    //   const qUsers = await User.find({}).select("_id")
+    //   const users = qUsers.map(user => user.id)
+    //   const usersCount = users.length
+    //   const mainCount = 1000;
+    //   for (let i = 0; i < mainCount; i++) {
+    //     let data = []
+    //     const rand = randomInteger(12, 18)
+    //     for (let j = 0; j < rand; j++) {
+    //       data.push(uuidv4())
+    //     }
+    //     res.push({
+    //       data,
+    //       id: uuidv4(),
+    //       poll,
+    //       user: users[randomInteger(0, usersCount - 1)],
+    //       city: cities[randomInteger(0, citiesCount - 1)],
+    //       _v: 0
+    //     })
+    //   }
+    //   return res
+    // }
   },
   Mutation: {
     addNewUser: async (_, args) => {
@@ -538,44 +539,126 @@ module.exports = {
       const status = args.active
       return await Poll.findByIdAndUpdate({ "_id": pollId }, { "active": status }, { new: true })
     },
-    deletePoll(_, args) {
+    deletePoll: async (_, args) => {
       const pollId = args.id
-      Poll.findById(pollId, function (err, result) {
-        if (err) {
-          console.log(err);
-        } else {
-          const questions = result.questions
-          const qLength = questions.length
-          for (let i = 0; i < qLength; i++) {
-            const qId = questions[i]
-            Question.findById(qId, function (err, result) {
-              if (err) {
-                console.log(err)
-              } else {
-                const answers = result.answers
-                const aLength = answers.length
-                for (let i = 0; i < aLength; i++) {
-                  const aId = answers[i]
-                  Answer.deleteOne({ _id: aId }, function (err) { });
-                }
-                result.deleteOne()
-              }
-            })
-          }
-          Logic.findOne({ "poll": pollId }, function (err, result) {
-            const filePath = `.${result.path}`
-            try {
-              fs.unlinkSync(filePath)
-              result.deleteOne()
-              //file removed
-            } catch (err) {
-              console.error(err)
+      const poll = await Poll.findOne({ '_id': pollId })
+      const questions = poll.questions
+      const qLength = questions.length
+      for (let i = 0; i < qLength; i++) {
+        const question = questions[i]
+        const qDoc = await Question.findOne({ _id: question })
+        if (qDoc) {
+          const answers = qDoc.answers
+          const aLength = answers.length
+          for (let j = 0; j < aLength; j++) {
+            const answer = answers[j];
+            const aDoc = await Answer.findOne({ _id: answer })
+            if (aDoc) {
+              Result.deleteMany({ 'answer': answer.id }, () => { })
+              await aDoc.deleteOne()
             }
-          })
-          result.deleteOne()
+          }
+          await qDoc.deleteOne()
+        }
+
+      }
+      const respondents = await Respondent.find({ "poll": pollId })
+      const rLength = respondents.length
+      for (let k = 0; k < rLength; k++) {
+        const respondent = respondents[k];
+        Result.deleteMany({ 'respondent': respondent.id }, () => { })
+        await respondent.deleteOne()
+      }
+      Logic.findOne({ "poll": pollId }, function (err, doc) {
+        if (doc) {
+          const filePath = `.${doc.path}`
+          try {
+            fs.unlinkSync(filePath)
+            doc.deleteOne()
+            //file removed
+          } catch (err) {
+            console.error(err)
+          }
         }
       })
+      await poll.deleteOne()
+      return poll
     },
+    /*
+        deletePoll: async (_, args) => {
+          console.log('start')
+          const pollId = args.id
+          const pollOut = {}
+          Poll.findById(pollId, function (err, poll) {
+            console.log('1')
+    
+            if (err) {
+              console.log('error')
+              console.log(err);
+            } else {
+              console.log('2')
+    
+              Object.assign(pollOut, poll)
+              // console.log(pollOut)
+              // return pollOut
+              console.log('WTF')
+    
+              const questions = poll.questions
+              const qLength = questions.length
+              for (let i = 0; i < qLength; i++) {
+                Question.findById(questions[i], function (err, doc) {
+                  if (err) {
+                    console.log(err)
+                  } else {
+                    if (doc) {
+                      const answers = doc.answers
+                      const aLength = answers.length
+                      for (let i = 0; i < aLength; i++) {
+                        Answer.findOne({ "_id": answers[i] }, function (err, doc) {
+                          if (err) {
+                            console.log(err)
+                          } else {
+                            Result.deleteMany({ 'answer': answers[i] }, () => { })
+                            doc.deleteOne()
+                          }
+                        })
+                      }
+                      doc.deleteOne()
+                    }
+                  }
+                })
+              }
+              Respondent.find({ "poll": pollId }, function (err, docs) {
+                if (err) {
+                  console.log(err)
+                } else {
+                  for (let i = 0; i < docs.length; i++) {
+                    const respondent = docs[i]
+                    Result.deleteMany({ 'respondent': respondent.id }, () => { })
+                    respondent.deleteOne()
+                  }
+                }
+              })
+              Logic.findOne({ "poll": pollId }, function (err, doc) {
+                if (doc) {
+                  const filePath = `.${doc.path}`
+                  try {
+                    fs.unlinkSync(filePath)
+                    doc.deleteOne()
+                    //file removed
+                  } catch (err) {
+                    console.error(err)
+                  }
+                }
+              })
+              // poll.deleteOne()
+              // return pollOut
+            }
+          })
+          return await pollOut
+          console.log('end');
+        },
+        */
     newLimit: async (_, args) => {
       const questionId = args.id
       const limit = args.limit
@@ -605,6 +688,7 @@ module.exports = {
       // сохраняем респондентов
       const pollId = args.poll
       const lResults = results.length
+      const resultsOfSave = []
       for (let i = 0; i < lResults; i++) {
         const respondentId = uuidv4()
         const answers = results[i].result
@@ -636,7 +720,9 @@ module.exports = {
           data: resultPool
         }
         const res = await Respondent.create(resp)
+        resultsOfSave.push(res)
       }
+      return resultsOfSave
     },
     saveResult: async (_, args) => {
       const questions = args.data
@@ -778,36 +864,6 @@ module.exports = {
     },
     results: async (parent) => {
       return await Respondent.find({ "poll": parent._id })
-
-      let res = await Respondent.find({ "poll": parent.id }).exec()
-      const poll = parent.id;
-      // генерация пула городов
-      const qCities = await City.find({}).select("_id")
-      const cities = qCities.map(city => city.id)
-      const citiesCount = cities.length
-      // генерация пула пользователей
-      const qUsers = await User.find({}).select("_id")
-      const users = qUsers.map(user => user.id)
-      const usersCount = users.length
-      const mainCount = 5000;
-      for (let i = 0; i < mainCount; i++) {
-        let data = []
-        const rand = randomInteger(12, 18)
-        for (let j = 0; j < rand; j++) {
-          data.push(uuidv4())
-        }
-        res.push({
-          data,
-          id: uuidv4(),
-          poll,
-          user: users[randomInteger(0, usersCount - 1)],
-          city: cities[randomInteger(0, citiesCount - 1)],
-          _v: 0
-        })
-      }
-      return res
-
-
     },
     files: async (parent) => {
       return await PollFile.find({ "_id": { $in: parent.files } })
