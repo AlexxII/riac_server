@@ -10,6 +10,7 @@ const typeDefs = gql`
     shortTitle: String!,
     startDate: String!,                                "// объявить собственный ТИП Date"
     endDate: String!,
+    dateOrder: String!,                                "// дата для очередности"
     code: String!,
     liter: String!,
     sample: Int!,                                      "// Выборка"
@@ -40,7 +41,7 @@ const typeDefs = gql`
     limit: Int,
     type: Int,
     order: Int,
-    parentPool: ID!,
+    poll: Poll,
     topic: Topic,
     answers: [Answer],
     codesPool: [String]
@@ -51,7 +52,7 @@ const typeDefs = gql`
     title: String!,
     shortTitle: String!,
     code: String!,
-    parentPool: ID!,
+    poll: Poll,
     order: Int!,
     results: [Result],
   }
@@ -182,7 +183,9 @@ const typeDefs = gql`
     ## pollResults(id:String!): [Respondent],
     respondent(id:String): Respondent,
     customFilters: [CustomFilter],
-    customFiltersAll: [CustomFilter]
+    customFiltersAll: [CustomFilter],
+
+    sameQuestions(id: String!, poll: String): [Question]
   }
 
   type Mutation {

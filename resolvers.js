@@ -1,4 +1,4 @@
-const { AuthenticationError } = require('apollo-server-express')
+const { AuthenticationError, UserInputError } = require('apollo-server-express')
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs')
 
@@ -20,6 +20,7 @@ const CustomFilter = require('./models/polls/customfilter')
 
 const { GraphQLScalarType } = require('graphql');
 const moment = require('moment');
+const question = require('./models/polls/question');
 
 const sex = [
   {
@@ -83,67 +84,38 @@ module.exports = {
     },
     customFiltersAll: async () => await CustomFilter.find({}).sort('order'),
     customFilters: async () => await CustomFilter.find({ active: { $ne: false } }).sort('order'),
-
-    // pollResults: async (_, args) => {
-    //   // return await Respondent.find({ "poll": args.id }).exec()
-    //   // let res = await Respondent.find({ "poll": args.id }).exec()
-    //   const poll = args.id;
-    //   // генерация пула городов
-    //   const qCities = await City.find({}).select("_id")
-    //   const cities = qCities.map(city => city.id)
-    //   const citiesCount = cities.length
-    //   // генерация пула пользователей
-    //   const qUsers = await User.find({}).select("_id")
-    //   const users = qUsers.map(user => user.id)
-    //   const usersCount = users.length
-    //   const mainCount = 1000;
-    //   for (let i = 0; i < mainCount; i++) {
-    //     let data = []
-    //     const rand = randomInteger(12, 18)
-    //     for (let j = 0; j < rand; j++) {
-    //       data.push(uuidv4())
-    //     }
-    //     res.push({
-    //       data,
-    //       id: uuidv4(),
-    //       poll,
-    //       user: users[randomInteger(0, usersCount - 1)],
-    //       city: cities[randomInteger(0, citiesCount - 1)],
-    //       _v: 0
-    //     })
-    //   }
-    //   return res
-    // }
+    sameQuestions: async (_, args) => {
+      const topicId = args.id
+      const currentPoll = args.poll
+      try {
+        const questions = await Question.fin2d({ 'topic': topicId, poll: { $ne: currentPoll } })
+        return questions
+      } catch (error) {
+        throw new Error('Ошибка в извлечении данных из БД');
+      }
+    }
   },
   Mutation: {
     addNewUser: async (_, args) => {
-      const user = {
-        _id: uuidv4(),
-        username: args.user.username,
-        login: args.user.login,
-        password: args.user.password,
-        status: args.user.status,
-        rights: args.user.rights,
-        default: false,
-        active: true
+      const username = args.user.username
+      const login = args.user.login
+      const res = await User.findOne({ $or: [{ 'login': login }, { "username": username }] }).exec()
+      if (res) {
+        throw new UserInputError('Пользователь уже существует', { type: '000411' });
+      } else {
+        const user = {
+          _id: uuidv4(),
+          username,
+          login,
+          password: args.user.password,
+          status: args.user.status,
+          rights: args.user.rights,
+          default: false,
+          active: true
+        }
+        const res = await User.create(user)
+        return res
       }
-      const res = await User.create(user)
-      return res
-      /*
-            const res = await User.findOne({ "username": username }).exec()
-            if (res) {
-              throw new Error('Пользователь с таким ИМЕНЕМ уже существует');
-            } else {
-              const newUser = {
-                _id: uuidv4(),
-                username,
-                password
-              };
-              context.User.create(newUser)
-              return { user: newUser }
-            }
-      */
-
     },
     deleteUsers: async (_, args) => {
       // TODO: УДАЛИТЬ или выставить флаг active -> false
@@ -421,6 +393,13 @@ module.exports = {
       const qLength = questions.length
       let questionsPool = []
       const pollId = uuidv4()
+      const pollCode = args.poll.code
+      if (pollCode) {
+        const res = await Poll.findOne({ "code": pollCode }).exec()
+        if (res) {
+          throw new UserInputError('Опрос с таким кодом уже существует в БД.', { type: '000431' });
+        }
+      }
       for (let i = 0; i < qLength; i++) {
         const answers = questions[i].answers
         lAnswers = answers.length
@@ -819,6 +798,9 @@ module.exports = {
     endDate: (parent) => {
       return moment(parent.endDate).format('DD.MM.YYYY')
     },
+    dateOrder: (parent) => {
+      return parent.startDate
+    },
     resultsCount: async (parent) => {
       return await Respondent.find({ "poll": parent.id }).count()
     }
@@ -835,6 +817,9 @@ module.exports = {
       const answers = await Answer.find({ "_id": { $in: parent.answers } }).sort('order')
       const codePool = answers.map(answer => answer.code)
       return codePool
+    },
+    poll: async (parent) => {
+      return await Poll.findById(parent.poll)
     }
   },
   Answer: {
