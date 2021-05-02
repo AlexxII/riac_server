@@ -85,14 +85,24 @@ module.exports = {
     customFiltersAll: async () => await CustomFilter.find({}).sort('order'),
     customFilters: async () => await CustomFilter.find({ active: { $ne: false } }).sort('order'),
     sameQuestions: async (_, args) => {
-      const topicId = args.id
+      const topics = args.topics
       const currentPoll = args.poll
       try {
-        const questions = await Question.fin2d({ 'topic': topicId, poll: { $ne: currentPoll } })
+        const questions = await Question.find({ 'topic': { $in: topics }, poll: { $ne: currentPoll } })
         return questions
       } catch (error) {
         throw new Error('Ошибка в извлечении данных из БД');
       }
+      // for (let i = 0; i < topics.length; i++) {
+      //   try {
+      //     const topicId = topics[i]
+      //     console.log(topicId);
+      //     result[i] = await Question.find({ 'topic': { $in: topics }, poll: { $ne: currentPoll } })
+      //   } catch (error) {
+      //     throw new Error('Ошибка в извлечении данных из БД');
+      //   }
+      // }
+      // return result
     }
   },
   Mutation: {
