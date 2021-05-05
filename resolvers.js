@@ -103,6 +103,15 @@ module.exports = {
       //   }
       // }
       // return result
+    },
+    answersWithResults: async (_, args) => {
+      const qId = args.id
+      try {
+        const question = await Question.findOne({ '_id': qId })
+        return question
+      } catch (error) {
+        throw new Error('Ошибка в извлечении данных из БД');
+      }
     }
   },
   Mutation: {

@@ -185,7 +185,8 @@ const typeDefs = gql`
     customFilters: [CustomFilter],
     customFiltersAll: [CustomFilter],
 
-    sameQuestions(topics: [String!], poll: String!): [Question]
+    sameQuestions(topics: [String!], poll: String!): [Question],
+    answersWithResults(id: String!): Question
   }
 
   type Mutation {
