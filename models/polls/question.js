@@ -3,6 +3,7 @@ const Schema = mongoose.Schema
 
 const questionSchema = new Schema({
   _id: String,
+  importId: String,
   title: String,
   shortTitle: String,
   limit: Number,

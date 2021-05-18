@@ -3,7 +3,9 @@ const Schema = mongoose.Schema
 
 const answerSchema = new Schema({
   _id: String,
+  importId: String,
   poll: String,
+  question: String,
   title: String,
   shortTitle: String,
   code: String,

@@ -57,6 +57,15 @@ const typeDefs = gql`
     results: [Result],
   }
 
+  type Distribution {
+    id: ID!,
+    data: String!,
+    parentAnswer: Answer,
+    refPoll: Poll,
+    refAnswer: Answer,
+    order: Int
+  }
+
   type PollFile {
     id: ID!,
     title: String!,
@@ -242,7 +251,9 @@ const typeDefs = gql`
     updateResultCity(results: [String], city: String): [Respondent],
     updateResultUser(results: [String], user: String): [Respondent],
 
-    saveBatchResults(poll: String!, results: [BatchResults]): [Respondent]
+    saveBatchResults(poll: String!, results: [BatchResults]): [Respondent],
+
+    saveAnswersDistribution(poll: String!, answers: [AnswerDistribution!]): [Distribution]
   }
 
   input ReorderedArray {
@@ -252,6 +263,18 @@ const typeDefs = gql`
 
   input ItemsReorder {
     id: String!,
+    order: Int!
+  }
+
+  input AnswerDistribution {
+    id: String!,
+    distribution: [DistributionInput]
+  }
+
+  input DistributionInput {
+    data: String!,
+    parent: String!,
+    refAnswer: String,
     order: Int!
   }
 
@@ -322,6 +345,7 @@ const typeDefs = gql`
   }
 
   input QuestionInput {
+    importId: String!,
     title: String!,
     shortTitle: String,
     limit: Int,
@@ -332,6 +356,7 @@ const typeDefs = gql`
   }
 
   input AnswerInput {
+    importId: String!,
     title: String!,
     shortTitle: String,
     code: String!,

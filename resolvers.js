@@ -5,6 +5,7 @@ const fs = require('fs')
 const Poll = require('./models/polls/poll')
 const Question = require('./models/polls/question')
 const Answer = require('./models/polls/answer')
+const Distribution = require('./models/polls/distribution')
 const PollFile = require('./models/polls/pollfile')
 const Topic = require('./models/polls/topic')
 const Logic = require('./models/polls/logic')
@@ -421,12 +422,15 @@ module.exports = {
       }
       for (let i = 0; i < qLength; i++) {
         const answers = questions[i].answers
+        const questionId = uuidv4()
         lAnswers = answers.length
         let answersPool = []
         for (let i = 0; i < lAnswers; i++) {
           const answer = {
             _id: uuidv4(),
+            importId: answers[i].importId,
             poll: pollId,
+            question: questionId,
             title: answers[i].title,
             code: answers[i].code,
             order: answers[i].order,
@@ -436,7 +440,8 @@ module.exports = {
           answersPool.push(answer._id)
         }
         const question = {
-          _id: uuidv4(),
+          _id: questionId,
+          importId: questions[i].importId,
           title: questions[i].title,
           limit: questions[i].limit,
           order: questions[i].order,
