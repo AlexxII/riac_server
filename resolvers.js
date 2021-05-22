@@ -677,6 +677,7 @@ module.exports = {
         poll: args.poll,
         city: args.city,
         user: args.user,
+        driveinUser: args.driveinUser,
         created: new Date(),
         lastModified: new Date(),
         processed: false,
@@ -859,6 +860,9 @@ module.exports = {
       return await City.findById(parent.city)
     },
     user: async (parent) => {
+      return await User.findById(parent.user)
+    },
+    driveinUser: async (parent) => {
       return await User.findById(parent.user)
     },
     created: (parent) => {

@@ -6,6 +6,7 @@ const respondentSchema = new Schema({
   poll: String,
   city: String,
   user: String,
+  dirveinUser: String,
   created: Date,
   lastModified: Date,
   processed: Boolean,
