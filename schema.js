@@ -55,6 +55,7 @@ const typeDefs = gql`
     poll: Poll,
     order: Int!,
     results: [Result],
+    distribution: [Distribution]
   }
 
   type Distribution {
@@ -254,7 +255,7 @@ const typeDefs = gql`
 
     saveBatchResults(poll: String!, results: [BatchResults]): [Respondent],
 
-    saveAnswersDistribution(poll: String!, answers: [AnswerDistribution!]): [Distribution]
+    saveAnswersDistribution(poll: String!, answers: [AnswerDistribution]): [Distribution]
   }
 
   input ReorderedArray {
@@ -273,8 +274,9 @@ const typeDefs = gql`
   }
 
   input DistributionInput {
+    id: String,
     data: String!,
-    parent: String!,
+    refPoll: String,
     refAnswer: String,
     order: Int!
   }

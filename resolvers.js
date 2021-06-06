@@ -751,6 +751,30 @@ module.exports = {
       }
       return returnResult
     },
+    saveAnswersDistribution: async (_, args) => {
+      const pollId = args.poll
+      const answers = args.answers
+      for (let i = 0; i < answers.length; i++) {
+        const answer = answers[i]
+        const distribution = answer.distribution
+        // если у распределения уже есть id, то идет обновление поля
+        for (let j = 0; j < distribution.length; j++) {
+          if (distribution[j].id) {
+
+          } else {
+            const distrib = {
+              _id: uuidv4(),
+              data: distribution[j].data,
+              parentAnswer: answer.id,
+              refPoll: distribution[j].refPoll,
+              refAnswer: distribution[j].refAnswer,
+              order: distribution[j].order
+            }
+            const dSave = Distribution.create(distrib)
+          }
+        }
+      }
+    },
     saveResultStatus: async (_, args) => {
       const respondents = args.results
       const type = args.type
@@ -850,6 +874,9 @@ module.exports = {
   Answer: {
     results: async (parent) => {
       return await Result.find({ "answer": parent._id })
+    },
+    distribution: async (parent) => {
+      return await Distribution.find({ "parentAnswer": parent.id }).sort('order')
     }
   },
   Respondent: {
