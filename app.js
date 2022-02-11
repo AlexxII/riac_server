@@ -15,7 +15,7 @@ const { GraphQLLocalStrategy, buildContext } = require('graphql-passport');
 const User = require('./models/common/user')
 
 // mongoose.connect('mongodb://182.11.57.111:27017/poll', { useNewUrlParser: true });
-mongoose.connect('mongodb://localhost:27017/poll', { useNewUrlParser: true });
+mongoose.connect('mongodb://127.0.0.1:27017/poll', { useNewUrlParser: true });
 const dbConnection = mongoose.connection
 dbConnection.on('error', err => console.log(`Connsetcion error: ${err}`))
 dbConnection.once('open', () => console.log('Connected to DB!'))
@@ -24,7 +24,7 @@ const SESSION_SECRET = 'sdkhflkwjqheflkjhJHGKJHG231223487$#%@asdfjkashdasdfhKGKJ
 const PORT = 4000
 
 const corsOptions = {
-  origin: 'http://localhost:8000',
+  origin: 'http://localhost:8080',
   credentials: true,
 };
 

@@ -462,13 +462,13 @@ module.exports = {
         questions: questionsPool
       }
       const poll = await Poll.create(pollData)
-      for (let i = 0; i < topics.length; i++) {
-        const topicData = {
-          _id: topics[i].id,
-          title: topics[i].title
-        }
-        const topic = Topic.create(topicData)
-      }
+      // for (let i = 0; i < topics.length; i++) {
+      //   const topicData = {
+      //     _id: topics[i].id,
+      //     title: topics[i].title
+      //   }
+      //   const topic = Topic.create(topicData)
+      // }
       // Сохранение кофигурации в файл
       const newLineChar = process.platform === 'win32' ? '\r\n' : '\n';
       let text = ''
@@ -512,7 +512,12 @@ module.exports = {
       text += '04/{city}"'
       const t = +new Date
       const logicFile = `/files/polls/pollconfig_${t}.ini`
-      fs.writeFileSync(`.${logicFile}`, text)
+      console.log(logicFile);
+      fs.writeFileSync(`.${logicFile}`, text, err=>{
+        if(err) {
+          console.log(`Error, while writting config file - ${err}`);
+        }
+      },)
       const logicData = {
         _id: uuidv4(),
         poll: pollId,
