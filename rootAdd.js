@@ -14,7 +14,7 @@ const UserStatus = require('./models/common/userStatus')
 const CityCategory = require('./models/common/citycategory')
 const AgeCategory = require('./models/polls/agecategory')
 
-mongoose.connect('mongodb://localhost:27017/poll', { useNewUrlParser: true });
+mongoose.connect('mongodb://127.0.0.1:27017/poll', { useNewUrlParser: true });
 const dbConnection = mongoose.connection
 dbConnection.on('error', err => console.log(`Connsetcion error: ${err}`))
 dbConnection.once('open', () => console.log('Connected to DB!'))

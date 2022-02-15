@@ -462,13 +462,13 @@ module.exports = {
         questions: questionsPool
       }
       const poll = await Poll.create(pollData)
-      // for (let i = 0; i < topics.length; i++) {
-      //   const topicData = {
-      //     _id: topics[i].id,
-      //     title: topics[i].title
-      //   }
-      //   const topic = Topic.create(topicData)
-      // }
+      for (let i = 0; i < topics.length; i++) {
+        const topicData = {
+          _id: topics[i].id,
+          title: topics[i].title
+        }
+        const topic = Topic.create(topicData)
+      }
       // Сохранение кофигурации в файл
       const newLineChar = process.platform === 'win32' ? '\r\n' : '\n';
       let text = ''
