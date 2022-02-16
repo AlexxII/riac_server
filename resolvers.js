@@ -22,6 +22,7 @@ const CustomFilter = require('./models/polls/customfilter')
 const { GraphQLScalarType } = require('graphql');
 const moment = require('moment');
 const question = require('./models/polls/question');
+const topic = require('./models/polls/topic');
 
 const sex = [
   {
@@ -467,7 +468,11 @@ module.exports = {
           _id: topics[i].id,
           title: topics[i].title
         }
-        const topic = Topic.create(topicData)
+        const res = await Topic.findOne({"_id": topicData._id}).exec()
+        if (res) {
+          continue
+        }
+        // const topic = Topic.create(topicData)
       }
       // Сохранение кофигурации в файл
       const newLineChar = process.platform === 'win32' ? '\r\n' : '\n';
