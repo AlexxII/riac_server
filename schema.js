@@ -164,6 +164,7 @@ const typeDefs = gql`
 
   type Query {
     users: [User],
+    protectedUsersInfo: [User],
     userRights: [UserRights],
     userStatus: [UserStatus],
     currentUser: User,

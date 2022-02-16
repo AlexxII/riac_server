@@ -39,15 +39,22 @@ const sex = [
 
 module.exports = {
   Query: {
+    protectedUsersInfo: async (_, __, context) => {
+      const user = context.getUser();
+      const userRights = await UserRights.findById(user.rights);
+      if (userRights.title == "Администратор" || userRights.title == 'Суперадмин') {
+        return await User.find({ default: { $ne: true } }).select('id username login status rights').sort('order')
+      }
+      throw new UserInputError('Отказано в доступе', { type: '000501' });
+    },    // users: () => User.find().select('id username login status rights'),
     users: async () => await User.find({ default: { $ne: true } }).select('id username login status rights').sort('order'),
-    // users: () => User.find().select('id username login status rights'),
     currentUser: (_, __, context) => context.getUser(),
     userRights: async () => await UserRights.find({ root: { $ne: true } }).sort('order'),
     userStatus: async () => await UserStatus.find({}).sort('order'),
 
     polls: async () => await Poll.find({ active: { $ne: false } }).sort('startDate'),
     archivePolls: async () => await Poll.find({ active: { $ne: true } }).sort('startDate'),
-    poll: async (_, args) => await Poll.findById(args.id),
+    poll: async (_, args, context) => await Poll.findById(args.id),
     questions: async () => {
       return await Question.find({});
     },
@@ -122,7 +129,7 @@ module.exports = {
       const login = args.user.login
       const res = await User.findOne({ $or: [{ 'login': login }, { "username": username }] }).exec()
       if (res) {
-        throw new UserInputError('Пользователь уже существует', { type: '000411' });
+        throw new UserIniputError('Пользователь уже существует', { type: '000411' });
       } else {
         const user = {
           _id: uuidv4(),
@@ -401,7 +408,6 @@ module.exports = {
             }
           },
           function (err, result) {
-            console.log(result);
             return result.filters
           }
         )
@@ -468,7 +474,7 @@ module.exports = {
           _id: topics[i].id,
           title: topics[i].title
         }
-        const res = await Topic.findOne({"_id": topicData._id}).exec()
+        const res = await Topic.findOne({ "_id": topicData._id }).exec()
         if (res) {
           continue
         }
@@ -517,12 +523,11 @@ module.exports = {
       text += '04/{city}"'
       const t = +new Date
       const logicFile = `/files/polls/pollconfig_${t}.ini`
-      console.log(logicFile);
-      fs.writeFileSync(`.${logicFile}`, text, err=>{
-        if(err) {
+      fs.writeFileSync(`.${logicFile}`, text, err => {
+        if (err) {
           console.log(`Error, while writting config file - ${err}`);
         }
-      },)
+      })
       const logicData = {
         _id: uuidv4(),
         poll: pollId,
