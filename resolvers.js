@@ -557,7 +557,12 @@ module.exports = {
       const status = args.active
       return await Poll.findByIdAndUpdate({ "_id": pollId }, { "active": status }, { new: true })
     },
-    deletePoll: async (_, args) => {
+    deletePoll: async (_, args, context) => {
+      const user = context.getUser();
+      const userRights = await UserRights.findById(user.rights);
+      if (userRights.title != "Администратор" && userRights.title != 'Суперадмин') {
+        throw new UserInputError('Отказано в доступе', { type: '000501' });
+      }
       const pollId = args.id
       const poll = await Poll.findOne({ '_id': pollId })
       const questions = poll.questions
