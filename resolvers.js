@@ -534,6 +534,7 @@ module.exports = {
         path: logicFile
       }
       const res = await Logic.create(logicData)
+      console.log(poll)
       return poll
     },
     setPollCity: async (_, args) => {
@@ -595,9 +596,11 @@ module.exports = {
       Logic.findOne({ "poll": pollId }, function (err, doc) {
         if (doc) {
           const filePath = `.${doc.path}`
+          console.log(filePath);
           try {
-            fs.unlinkSync(filePath)
+            fs.unlinkSync(filePath);
             doc.deleteOne()
+            console.log('file is deleted')
             //file removed
           } catch (err) {
             console.error(err)
