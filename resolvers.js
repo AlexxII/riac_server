@@ -102,16 +102,6 @@ module.exports = {
       } catch (error) {
         throw new Error('Ошибка в извлечении данных из БД');
       }
-      // for (let i = 0; i < topics.length; i++) {
-      //   try {
-      //     const topicId = topics[i]
-      //     console.log(topicId);
-      //     result[i] = await Question.find({ 'topic': { $in: topics }, poll: { $ne: currentPoll } })
-      //   } catch (error) {
-      //     throw new Error('Ошибка в извлечении данных из БД');
-      //   }
-      // }
-      // return result
     },
     answersWithResults: async (_, args) => {
       const qId = args.id
@@ -413,7 +403,12 @@ module.exports = {
         )
       }
     },
-    addPoll: async (_, args) => {
+    addPoll: async (_, args, context) => {
+      const user = context.getUser();
+      const userRights = await UserRights.findById(user.rights);
+      if (userRights.title != "Администратор" && userRights.title != 'Суперадмин') {
+        throw new UserInputError('Отказано в доступе', { type: '000501' });
+      }
       const questions = args.questions
       const topics = args.topic
       const logic = args.logic
@@ -478,7 +473,7 @@ module.exports = {
         if (res) {
           continue
         }
-        // const topic = Topic.create(topicData)
+        const topic = Topic.create(topicData)
       }
       // Сохранение кофигурации в файл
       const newLineChar = process.platform === 'win32' ? '\r\n' : '\n';
@@ -534,7 +529,6 @@ module.exports = {
         path: logicFile
       }
       const res = await Logic.create(logicData)
-      console.log(poll)
       return poll
     },
     setPollCity: async (_, args) => {
@@ -553,7 +547,12 @@ module.exports = {
       await poll.save()
       return poll
     },
-    savePollStatus: async (_, args) => {
+    savePollStatus: async (_, args, context) => {
+      const user = context.getUser();
+      const userRights = await UserRights.findById(user.rights);
+      if (userRights.title != "Администратор" && userRights.title != 'Суперадмин') {
+        throw new UserInputError('Отказано в доступе', { type: '000501' });
+      }
       const pollId = args.id
       const status = args.active
       return await Poll.findByIdAndUpdate({ "_id": pollId }, { "active": status }, { new: true })
@@ -596,11 +595,9 @@ module.exports = {
       Logic.findOne({ "poll": pollId }, function (err, doc) {
         if (doc) {
           const filePath = `.${doc.path}`
-          console.log(filePath);
           try {
             fs.unlinkSync(filePath);
             doc.deleteOne()
-            console.log('file is deleted')
             //file removed
           } catch (err) {
             console.error(err)
